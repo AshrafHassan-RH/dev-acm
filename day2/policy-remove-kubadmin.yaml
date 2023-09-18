@@ -5,11 +5,6 @@ metadata:
   namespace: default
   annotations:
     policy.open-cluster-management.io/description: policy-remove-kubadmin
-  creationTimestamp: 2023-09-15T19:36:27Z
-  generation: 1
-  managedFields:
-  resourceVersion: "68782003"
-  uid: 60c8bf74-94f5-4659-b0ba-d73c89292ad6
 spec:
   disabled: false
   policy-templates:
