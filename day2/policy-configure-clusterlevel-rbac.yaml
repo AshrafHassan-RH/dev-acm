@@ -5,11 +5,6 @@ metadata:
   namespace: default
   annotations:
     policy.open-cluster-management.io/description: policy-configure-clusterlevel-rbac
-  creationTimestamp: 2023-09-15T19:17:11Z
-  generation: 2
-  managedFields:
-  resourceVersion: "68760428"
-  uid: c442a489-a5eb-424a-ad0d-bdde5e2a67f1
 spec:
   disabled: false
   policy-templates:
