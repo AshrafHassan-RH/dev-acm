@@ -85,7 +85,7 @@ spec:
                 metadata:
                   name: example-compliancescan-platform
                 spec:
-                  content": "ssg-ocp4-ds.xml
+                  content: ssg-ocp4-ds.xml
                   profile: xccdf_org.ssgproject.content_profile_moderate
                   scanType: Platform
                   content: ssg-rhcos4-ds.xml
