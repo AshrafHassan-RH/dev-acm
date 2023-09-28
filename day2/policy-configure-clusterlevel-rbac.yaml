@@ -29,3 +29,13 @@ spec:
                   - name: devadmin
                     apiGroup: rbac.authorization.k8s.io
                     kind: User
+---
+apiVersion: cluster.open-cluster-management.io/v1beta1
+kind: Placement
+metadata:
+  name: install-quay-placement
+  namespace: default
+spec:
+  clusterSets:
+    - default
+    - global
