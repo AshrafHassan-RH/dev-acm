@@ -78,3 +78,24 @@ Automatically create namespace if it does not exist
 
 **Placement**  
 Existing placement: all-openshift-clusters  
+
+
+To remove compliance operator, first remove the aplication from RHAC. Then login to each cluster where compliance operator is installed and run these commands:  
+````
+oc project openshift-compliance
+oc edit profilebundle ocp4  
+````
+Find the below section and delete the marked line and save the file.
+````
+spec:
+  finalizers:
+  - kubernetes   <-- delete this line
+````
+Do the same with
+````
+oc edit profilebundle rhcos4
+````
+
+
+
+On each cluster run these commands 
