@@ -1,0 +1,30 @@
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: thanos-object-storage
+  namespace: open-cluster-management-observability
+type: Opaque
+stringData:
+  thanos.yaml: |
+    type: s3
+    config:
+      bucket: multicluster-observability-fe321633-7460-4dd9-97fd-3636a39b340d
+      endpoint: rook-ceph-rgw-ocs-storagecluster-cephobjectstore.openshift-storage.svc:443
+      insecure: false
+      access_key: E03KQIDY22AMOY8REMJI
+      secret_key: 77pBHvE5wt86WUTAVIORxMIwc39VTiyCjewiIoqr
+      http_config:
+        insecure_skip_verify: true
+---
+apiVersion: observability.open-cluster-management.io/v1beta2
+kind: MultiClusterObservability
+metadata:
+  name: observability
+spec:
+  observabilityAddonSpec: {}
+  storageConfig:
+    metricObjectStorage:
+      name: thanos-object-storage
+      key: thanos.yaml
+

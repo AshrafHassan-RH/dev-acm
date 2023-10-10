@@ -105,13 +105,3 @@ spec:
           remediationAction: enforce
           severity: low
   remediationAction: enforce
----
-apiVersion: cluster.open-cluster-management.io/v1beta1
-kind: Placement
-metadata:
-  name: install-quay-placement
-  namespace: default
-spec:
-  clusterSets:
-    - default
-    - global
