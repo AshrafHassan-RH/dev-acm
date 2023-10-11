@@ -41,7 +41,7 @@ subjects:
 
 In the above PlacementBinding we are telling the Policy controller to to link the placement defined in "placementRef" which is in our case"placement-policies-all-clusters" to the policies defined under subjects. These policies are defined in the files within /day2/policies folder.
 
-## Issue with Policies deployed using Subscription on a cluster with internet proxy
+### Issue with Policies deployed using Subscription on a cluster with internet proxy
 
 We encountered the issue when trying to deploy Policies using subscriptions. After creating Subscription the policies were always in pending state. The problem was in that the http_proxy was not configured for the applicationManager which needs access to the git repo defined for policy deployments.  
 
