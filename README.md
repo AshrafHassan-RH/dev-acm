@@ -99,22 +99,24 @@ Once all the information is filled in click "Create" in the header of the dialog
 
  
       
- 
+## Using GitOps operator to deploy applications via RHACM 
 
-## Setting up gitops with rhacm:
+### Setting up GitOps with RHACM
 
+To integrate GitOps with RHACM, all RHACM managed clusters need to be registered to an instance of GitOps operator running on the hub cluster. Once this is configured, applications can be deployed to those clusters using ArgoCD. To achieve this run the following commands on the hub cluster:
 
+```
 oc apply -f /bootstrap/rhacm-gitops/01_managedclustersetbinding.yaml  
 oc apply -f /bootstrap/rhacm-gitops/02_placement.yaml  
 oc apply -f /bootstrap/rhacm-gitops/03_gitopscluster.yaml  
+```
+
+### Deploying workloads with gitops  
+
+When RHACM is configured to use gitops operator for the deployment of applications, we can use ApplicationSet to deploy any kind of workload. In that case ArgoCD managed bygitops operator on the hub cluster is subscribing to git repos where deployable workloads are defined. These workloads are then deployed to any of the managed clusters using Placements.   
 
 
-## Deploying workloads with gitops  
-
-Use filter, click checkbox for  Application sets and Subscriptions in the Applications dashboard.  
-
-
-### Deploying multiclusterobservability using gitops
+#### Deploying multiclusterobservability using gitops
 
 For observability, namespace called open-cluster-management-observability has to be created prior to creating Application using Applicationset. The objet bucket claim has to be created also, and information like access, key, secret key, endpoint and bucket name have to be provided to gitops/observe/observability.yaml  
 
@@ -151,7 +153,7 @@ To remove observability, just delete created Application.
 
 
 
-### Deploy compliance operator using gitops
+#### Deploy compliance operator using gitops
 
 In RHACM web console go to:  
 Applications>Create Application>Applicationset  
@@ -199,6 +201,4 @@ Do the same with
 oc edit profilebundle rhcos4
 ````
 
-
-
-On each cluster run these commands 
+These commands need to be run on each cluster where compliance operator was deployed. 
