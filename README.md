@@ -132,9 +132,9 @@ Requeue time: 180
 
 **Source**  
 Repository type: Git  
-URL: https://github.com/dsimonov1/rh-acm.git  
-Revision: master  
-Path: gitops/observe  
+URL: https://github.com/AshrafHassan-RH/dev-acm.git
+Revision: feature-test
+Path: day2/apps/observe/
 
 **Destination**  
 Remote namespace: default  
@@ -167,9 +167,9 @@ Requeue time: 180
 
 **Source**  
 Repository type: Git  
-URL: https://github.com/dsimonov1/rh-acm.git  
-Revision: master  
-Path: gitops/compliance  
+URL: https://github.com/AshrafHassan-RH/dev-acm.git
+Revision: feature-test
+Path: day2/apps/compliance/  
 
 **Destination**  
 Remote namespace: default  
@@ -185,7 +185,7 @@ Automatically create namespace if it does not exist
 Existing placement: all-openshift-clusters  
 
 
-To remove compliance operator, first remove the aplication from RHAC. Then login to each cluster where compliance operator is installed and run these commands:  
+To remove compliance operator, first remove the aplication from RHACM. Then login to each cluster where compliance operator is installed and run these commands:  
 ````
 oc project openshift-compliance
 oc edit profilebundle ocp4  
