@@ -61,7 +61,7 @@ spec
     noProxy: .cluster.local,.svc,10.128.0.0/14,10.254.164.0/24,10.254.164.248,10.254.171.0/24,10.254.171.11,10.254.171.12,127.0.0.1,172.30.0.0/16,api-int.hub-dev-cci.refmobilecloud.ux.nl.tmo,localhost,refmobilecloud.ux.nl.tmo  
 ```
 
-3. Add proxyPolicy under specification for "pplicationManager". It should resemble this example:
+3. Add proxyPolicy under specification for "applicationManager". It should resemble this example:
 ```
 applicationManager:
     enabled: true
@@ -72,7 +72,13 @@ applicationManager:
 
 After this fix Policies are successfully deplyed using Applications>Subscription.
 
+Note: This procedure needs to be done for addons on all managed clusters. The procedure is done on a hub cluster where klusterletaddonconfig exists in a namespace named after each managed cluster.
 
+For example:
+```
+oc -n <cluster-name> edit klusterletaddonconfig <cluster-name>
+``` 
+Where <cluster-name> is the name which can be found in RHACM web console unser Infrastructure>Clusters under "Name" column.
    
   
 ### Deploying Policies
