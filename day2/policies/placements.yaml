@@ -19,6 +19,23 @@ spec:
                 - "prod-dev-cci"
 
 ---
+apiVersion: cluster.open-cluster-management.io/v1beta1
+kind: Placement
+metadata:
+  name: placement-policies-hub-only
+  namespace: default
+spec:
+  clusterSets:
+    - global
+  predicates:
+    - requiredClusterSelector:
+        labelSelector:
+          matchExpressions:
+            - key: name
+              operator: In
+              values:
+                - "local-cluster"
+---
 apiVersion: policy.open-cluster-management.io/v1
 kind: PlacementBinding
 metadata:
@@ -45,5 +62,19 @@ subjects:
     apiGroup: policy.open-cluster-management.io
     kind: Policy
   - name: policy-install-openshift-compliance
+    apiGroup: policy.open-cluster-management.io
+    kind: Policy
+---
+apiVersion: policy.open-cluster-management.io/v1
+kind: PlacementBinding
+metadata:
+  name: binding-policies-hub-only
+  namespace: default
+placementRef:
+  name: placement-policies-hub-only
+  apiGroup: cluster.open-cluster-management.io
+  kind: Placement
+subjects:
+  - name: policy-install-observability
     apiGroup: policy.open-cluster-management.io
     kind: Policy
