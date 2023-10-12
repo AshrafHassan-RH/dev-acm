@@ -211,4 +211,4 @@ These commands need to be run on each cluster where compliance operator was depl
 
 ## RHACM RBAC
 
-
+The use case should setup a user "user1" using htpasswd identity provider. The user should be able to deploy apps on all clusters but should not be able to do anything to the infrastructure.

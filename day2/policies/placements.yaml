@@ -44,3 +44,6 @@ subjects:
   - name: policy-remove-kubadmin
     apiGroup: policy.open-cluster-management.io
     kind: Policy
+  - name: policy-install-openshift-compliance
+    apiGroup: policy.open-cluster-management.io
+    kind: Policy
