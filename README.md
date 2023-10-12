@@ -208,3 +208,7 @@ oc edit profilebundle rhcos4
 ````
 
 These commands need to be run on each cluster where compliance operator was deployed. 
+
+## RHACM RBAC
+
+
