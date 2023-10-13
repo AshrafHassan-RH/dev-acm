@@ -81,3 +81,6 @@ subjects:
   - name: policy-install-aap
     apiGroup: policy.open-cluster-management.io
     kind: Policy
+  - name: policy-advanced-cluster-security-central
+    apiGroup: policy.open-cluster-management.io
+    kind: Policy
