@@ -78,3 +78,6 @@ subjects:
   - name: policy-install-observability
     apiGroup: policy.open-cluster-management.io
     kind: Policy
+  - name: policy-install-aap
+    apiGroup: policy.open-cluster-management.io
+    kind: Policy
