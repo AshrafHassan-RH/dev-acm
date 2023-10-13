@@ -23,8 +23,6 @@ spec:
               objectDefinition:
                 apiVersion: v1
                 kind: Namespace
-                labels:
-                  openshift.io/cluster-monitoring: "true"
                 metadata:
                   name: ansible-automation-platform
     - objectDefinition:
