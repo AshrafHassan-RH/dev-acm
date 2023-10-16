@@ -61,6 +61,9 @@ subjects:
   - name: policy-remove-kubadmin
     apiGroup: policy.open-cluster-management.io
     kind: Policy
+  - name: policy-install-web-terminal
+    apiGroup: policy.open-cluster-management.io
+    kind: Policy
 ---
 apiVersion: policy.open-cluster-management.io/v1
 kind: PlacementBinding
