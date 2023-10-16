@@ -40,7 +40,7 @@ spec:
                 kind: OperatorGroup
                 metadata:
                   name: web-terminal-operator
-                  namespace: openshift-operators
+                  namespace: openshift-terminal
                 spec:
                   targetNamespaces:
                     - openshift-operators
