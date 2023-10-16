@@ -39,48 +39,23 @@ spec:
                 apiVersion: operators.coreos.com/v1
                 kind: OperatorGroup
                 metadata:
-                  name: ansible-automation-platform-operator
-                  namespace: ansible-automation-platform
+                  name: web-terminal-operator
+                  namespace: openshift-operators
                 spec:
                   targetNamespaces:
-                    - ansible-automation-platform
-    - objectDefinition:
+                    - openshift-operators
+     - objectDefinition:
         apiVersion: policy.open-cluster-management.io/v1
         kind: ConfigurationPolicy
         metadata:
-          name: aap-operator-subscription
+          name: web-terminal-controller
         spec:
           remediationAction: enforce
           severity: high
           object-templates:
             - complianceType: musthave
               objectDefinition:
-                apiVersion: operators.coreos.com/v1alpha1
-                kind: Subscription
-                metadata:
-                  name: ansible-automation-platform
-                  namespace: ansible-automation-platform
-                spec:
-                  channel: 'stable-2.4'
-                  name: ansible-automation-platform-operator
-                  installPlanApproval: Automatic
-                  source: redhat-operators
-                  sourceNamespace: openshift-marketplace
-    - objectDefinition:
-        apiVersion: policy.open-cluster-management.io/v1
-        kind: ConfigurationPolicy
-        metadata:
-          name: aap-automation-controller
-        spec:
-          remediationAction: enforce
-          severity: high
-          object-templates:
-            - complianceType: musthave
-              objectDefinition:
-                apiVersion: automationcontroller.ansible.com/v1beta1
-                kind: AutomationController
-                metadata:
-                  name: example
-                  namespace: ansible-automation-platform
+                apiVersion: workspace.devfile.io/v1beta1
+                kind: deployment
                 spec:
                   replicas: 1
