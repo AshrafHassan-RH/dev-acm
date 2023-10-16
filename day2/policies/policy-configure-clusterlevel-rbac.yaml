@@ -14,6 +14,7 @@ spec:
         metadata:
           name: policy-configure-clusterlevel
         spec:
+          remediationAction: enforce
           object-templates:
             - complianceType: musthave
               objectDefinition:
