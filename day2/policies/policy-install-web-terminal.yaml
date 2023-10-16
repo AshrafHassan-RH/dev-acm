@@ -14,7 +14,7 @@ spec:
         apiVersion: policy.open-cluster-management.io/v1
         kind: ConfigurationPolicy
         metadata:
-          name: aap-operator-ns
+          name: web-terminal-operator-ns
         spec:
           remediationAction: enforce
           severity: high
@@ -24,12 +24,12 @@ spec:
                 apiVersion: v1
                 kind: Namespace
                 metadata:
-                  name: ansible-automation-platform
+                  name: openshift-operators
     - objectDefinition:
         apiVersion: policy.open-cluster-management.io/v1
         kind: ConfigurationPolicy
         metadata:
-          name: aap-operator-operator-group
+          name: web-terminal-operator-operator-group
         spec:
           remediationAction: enforce
           severity: high
