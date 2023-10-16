@@ -44,18 +44,3 @@ spec:
                 spec:
                   targetNamespaces:
                     - openshift-operators
-    - objectDefinition:
-        apiVersion: policy.open-cluster-management.io/v1
-        kind: ConfigurationPolicy
-        metadata:
-          name: web-terminal-controller
-        spec:
-          remediationAction: enforce
-          severity: high
-          object-templates:
-            - complianceType: musthave
-              objectDefinition:
-                apiVersion: workspace.devfile.io/v1beta1
-                kind: deployment
-                spec:
-                  replicas: 1
