@@ -4,9 +4,9 @@ metadata:
   name: policy-install-web-terminal
   namespace: default
   annotations:
-    policy.open-cluster-management.io/categories: Automation
-    policy.open-cluster-management.io/standards: Automation
-    policy.open-cluster-management.io/controls: Automation
+    policy.open-cluster-management.io/categories: NIST SP 800-53
+    policy.open-cluster-management.io/standards: CM Configuration Management
+    policy.open-cluster-management.io/controls: CM-2 Baseline Configuration
 spec:
   disabled: false
   policy-templates:
