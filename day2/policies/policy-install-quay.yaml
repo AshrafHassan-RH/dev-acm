@@ -100,7 +100,7 @@ spec:
           remediationAction: enforce
           severity: high
           object-templates:
-  #          - complianceType: musthave
+            - complianceType: musthave
               objectDefinition:
                 apiVersion: quay.redhat.com/v1
                 kind: QuayRegistry
