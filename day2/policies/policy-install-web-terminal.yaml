@@ -43,7 +43,7 @@ spec:
                   namespace: openshift-terminal
                 spec:
                   targetNamespaces:
-                    - openshift-operators
+                    - openshift-terminal
     - objectDefinition:
         apiVersion: policy.open-cluster-management.io/v1
         kind: ConfigurationPolicy
