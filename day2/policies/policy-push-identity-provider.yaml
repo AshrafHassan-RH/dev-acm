@@ -60,30 +60,6 @@ spec:
         apiVersion: policy.open-cluster-management.io/v1
         kind: ConfigurationPolicy
         metadata:
-          name: htpasswd-file
-        spec:
-          namespaceSelector:
-            exclude:
-              - kube-*
-            include:
-              - default
-          object-templates:
-            - complianceType: musthave
-              objectDefinition:
-                apiVersion: v1
-                data:
-                  htpasswd: ZGV2YWRtaW46JDJ5JDA1JDI1b2dCcnV0dXJNYlRVYlljMjExdi5iSDQxUnA4Zll1NVl6ZjVCMFhNU3NFRlowTnFnQjRDCm11czokYXByMSRSamNzcUFVOSQyUzRobE1GM2JTUjBTTFBOVHQ1Y3EuCm11cy12aWV3OiRhcHIxJHlJdWdRVzd1JEFKTnhTbTNyTi5kSUhobXUzdmVSQy4=
-                kind: Secret
-                metadata:
-                  name: htpasswd-secret
-                  namespace: openshift-config
-                type: Opaque
-          remediationAction: enforce
-          severity: low
-    - objectDefinition:
-        apiVersion: policy.open-cluster-management.io/v1
-        kind: ConfigurationPolicy
-        metadata:
           name: ldap-file
         spec:
           namespaceSelector:
