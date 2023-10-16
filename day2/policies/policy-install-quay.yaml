@@ -108,4 +108,3 @@ spec:
                   namespace: openshift-operators
                 status:
                   phase: Running                  
-  remediationAction: enforce
