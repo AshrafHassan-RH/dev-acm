@@ -4,9 +4,9 @@ metadata:
   name: policy-install-web-terminal
   namespace: default
   annotations:
-    policy.open-cluster-management.io/categories: Automation
-    policy.open-cluster-management.io/standards: Automation
-    policy.open-cluster-management.io/controls: Automation
+    policy.open-cluster-management.io/categories: Web-Terminal
+    policy.open-cluster-management.io/standards: Web-Terminal
+    policy.open-cluster-management.io/controls: Web-Terminal
 spec:
   disabled: false
   policy-templates:
