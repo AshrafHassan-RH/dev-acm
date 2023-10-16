@@ -61,6 +61,7 @@ spec:
                   labels:
                     operators.coreos.com/web-terminal.openshift-operators: ''
                   name: web-terminal
+                  namespace: openshift-operators
                 spec:
                   channel: fast
                   installPlanApproval: Manual
