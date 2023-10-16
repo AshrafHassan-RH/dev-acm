@@ -57,7 +57,7 @@ spec:
         metadata:
           name: registry-1
         spec:
-          remediationAction: inform
+          remediationAction: enforce
           severity: high
           object-templates:
             - complianceType: musthave
