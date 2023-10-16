@@ -44,7 +44,7 @@ spec:
                 spec:
                   targetNamespaces:
                     - openshift-operators
-     - objectDefinition:
+    - objectDefinition:
         apiVersion: policy.open-cluster-management.io/v1
         kind: ConfigurationPolicy
         metadata:
