@@ -64,7 +64,7 @@ spec:
                   namespace: openshift-operators
                 spec:
                   channel: fast
-                  installPlanApproval: Manual
+                  installPlanApproval: Automatic
                   name: web-terminal
                   source: redhat-operators
                   sourceNamespace: openshift-marketplace
