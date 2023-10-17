@@ -24,7 +24,7 @@ spec:
                 apiVersion: v1
                 kind: Namespace
                 metadata:
-                  name: openshift-operators
+                  name: openshift-terminal
     - objectDefinition:
         apiVersion: policy.open-cluster-management.io/v1
         kind: ConfigurationPolicy
@@ -40,22 +40,32 @@ spec:
                 kind: OperatorGroup
                 metadata:
                   name: web-terminal-operator
-                  namespace: openshift-operators
+                  namespace: openshift-terminal
                 spec:
                   targetNamespaces:
-                    - openshift-operators
-     - objectDefinition:
+                    - openshift-terminal
+    - objectDefinition:
         apiVersion: policy.open-cluster-management.io/v1
         kind: ConfigurationPolicy
         metadata:
-          name: web-terminal-controller
+          name: web-terminal-operator-subscription
         spec:
           remediationAction: enforce
           severity: high
           object-templates:
             - complianceType: musthave
               objectDefinition:
-                apiVersion: workspace.devfile.io/v1beta1
-                kind: deployment
+                apiVersion: operators.coreos.com/v1alpha1
+                kind: Subscription
+                metadata:
+                  labels:
+                    operators.coreos.com/web-terminal.openshift-operators: ''
+                  name: web-terminal
+                  namespace: openshift-operators
                 spec:
-                  replicas: 1
+                  channel: fast
+                  installPlanApproval: Automatic
+                  name: web-terminal
+                  source: redhat-operators
+                  sourceNamespace: openshift-marketplace
+                  startingCSV: web-terminal.v1.7.0-0.1684429884.p
