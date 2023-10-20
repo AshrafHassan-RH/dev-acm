@@ -209,6 +209,216 @@ oc edit profilebundle rhcos4
 
 These commands need to be run on each cluster where compliance operator was deployed. 
 
+
+## RHACS
+The policy named policy-advanced-cluster-security-central installs ACS operator and central. The placements.yaml is so configured to install this policy on hub cluster only. An additional policy named policy-advanced-cluster-security-managed install only ACS oprator on all managed clusters. Such setup is needed since central component is only installed on the hub cluster whereas secured services are installed on all clusters manually. The requirement for secured services is ACS operator installed.   
+
+The admin password for central services is contained in secret called central-htpasswd in namespace stackrox on the hub cluster.
+
+URL for central Admin console can be found in namespace stackrox>routes on the hub cluster.
+
+Admin console: https://central-stackrox.apps.hub-dev-cci.refmobilecloud.ux.nl.tmo/main/clusters
+
+
+User: admin
+Password: G6s1jsJLZmZyPjYIaz0f9EjA3
+
+
+### Generating init-bundle
+
+You must have the Admin user role to create an init bundle.
+
+#### Procedure
+
+* On the RHACS portal, navigate to Platform Configuration → Integrations.
+* Navigate to the Authentication Tokens section and click on Cluster Init Bundle.
+* Click Generate bundle.
+* Enter a name for the cluster init bundle and click Generate.
+* Click Download Kubernetes Secret File to download the generated bundle.
+* Either copy the file or copy it's content and create a new file on the host with access to oc client.
+* Using the Red Hat OpenShift CLI, run the following command to create the resources:
+
+To configure init-bundle on hub cluster:
+````
+$ oc create -f rhacs-init-cluster-init-secrets.yaml -n stackrox
+````
+To configure init-bundle on managed clusters:
+````
+oc apply -f RHACS/rhacs-init-cluster-init-secrets.yaml -n rhacs-operator
+````
+
+### Installing secured services
+
+Secured services are installed on all managed clusters that need to be monitore. This usually includes all clusters together with hub cluster.
+
+#### Prerequisites
+
+* RHACS Operator installed
+* init bundle generated  and applied to the cluster.
+
+
+#### Procedure
+
+* On the OpenShift Container Platform web console, navigate to the Operators → Installed Operators page.
+* Click the RHACS Operator.
+* Click Secured Cluster from the central navigation menu in the Operator details page.
+* Click Create SecuredCluster.
+* Make sure Cluster Name is unique across all managed clusters
+* Fill in Central Endpoint: central-stackrox.apps.hub-dev-cci.refmobilecloud.ux.nl.tmo:443  
+* Click Create.
+
+
+### Integrating compliance operator with RHACS
+ 
+
+### RHACS cleanup
+
+Sometimes there is a need to have multiple attempts when using policies to deploy operators, especially when developing and testing new policies.
+In order to deploy operators using policies we need to cleanup previous deployments by hand.
+
+The cleanup usually encompasses uninstalling the operator from the web console and cleaning up namespace created during operator installation.
+When deleting namespace rhacs-operator, it iwll be stuck in termination phase. The cause of this is that not all resources in the namespace are deleted during operator uninstall.
+
+To address this issue execute these commands:
+````
+oc api-resources --verbs=list --namespaced -o name | xargs -t -n 1 oc get --show-kind --ignore-not-found -n rhacs-operator
+````
+The output will show that this resource is not deleted: 
+````
+NAME                                                     AGE
+central.platform.stackrox.io/stackrox-central-services   4d3h
+````
+Delete that resource
+````
+oc delete central.platform.stackrox.io/stackrox-central-services -n rhacs-operator
+````
+Delete the namespace if not already deleted
+````
+oc delete project rhacs-operator
+````
+
+## AAP
+
+AAP is installed using policy day2/policies/policy-install-AAP.yaml
+
+Current AAP web console URL is: https://example-ansible-automation-platform.apps.hub-dev-cci.refmobilecloud.ux.nl.tmo/
+
+Current login:
+admin
+mUgwXzWQ59sfvUoML8VwZyd298dQxgsD
+
+The AAP URL can be found using the command:  
+
+````
+oc get route -n ansible-automation-platform
+````
+
+The admin user and password can be fetched from the secret in ansible-automation-platform namespace using web console:
+
+* Go to Workloads>Serets in the left side menu
+* In the Project dropdown choose ansible-automation-platform
+* Scroll down to secret named example-admin-password
+Note: In our case the name of the instance iscalled example. If any other name instane name was used during AAP deployment the name will follow this rule: <instance-name>-admin-password
+* Click on the secret to reveal secret details
+* Scroll down and click Reveal values
+* Copy the secret and use it to login to AAP web console
+* Built in user for accessing the web console is admin 
+
+### Requesting subscription manifest
+
+One loged in to AAP web console, there is a need to provide a subscription. Since no proxy is configured, and it cannot be configured before subscription is applied,you need to download a subscription manifest from RH portal.
+
+* Follow the link provided in "subscription allocations" hyperlink
+* Login using your Red Hat Customer Portal credentials
+* From the Subscription Allocations page, click New Subscription Allocation.
+* Enter a name for the allocation so that you can find it later.
+* Select Type: Satellite 6.8 as the management application.
+* Click Create, This will create the subscription allcation named by the provided name.
+* Click on the tab Subscriptions. 
+* If AAP subscription is not already in the list click Add Subscriptions
+* In the Search box under "Add Subscriptions <Subscription Allocation Name> type "ansible"
+* For subscription named "60 Day Product Trial of Red Hat Ansible Automation Platform, Self-Supported (100 Managed Nodes)" enter number of entitlements: 50
+* Click "Submit"
+* Click "Export Manifest". This will start the download of the zip file containing the manifest.
+* On your AAP instance web console click "Browse" to upload a downloaded manifest.
+* Select the downloaded manifest
+* Click next
+* Under "User and Automation Analytics, deselect all chekboxes and click next
+* Under "End user license agreement" click Submit
+* You should see the empty AAP dashboard using web console
+
+### Configuring proxy for AAP
+
+To configure a list of known proxies for your automation controller, add the proxy IP addresses to the PROXY_IP_ALLOWED_LIST field in the settings page for your automation controller.
+
+#### Procedure
+
+On your automation controller, navigate to Settings → Miscellaneous System.
+In the PROXY_IP_ALLOWED_LIST field, enter IP addresses that are allowed to connect to your automation controller, following the syntax in the example below:
+
+Example PROXY_IP_ALLOWED_LIST entry
+
+[
+  "example1.proxy.com:8080",
+  "example2.proxy.com:8080"
+]
+Important:
+
+PROXY_IP_ALLOWED_LIST requires proxies in the list are properly sanitizing header input and correctly setting an X-Forwarded-For value equal to the real source IP of the client. Automation controller can rely on the IP addresses and hostnames in PROXY_IP_ALLOWED_LIST to provide non-spoofed values for the X-Forwarded-For field.
+Do not configure HTTP_X_FORWARDED_FOR as an item in `REMOTE_HOST_HEADERS`unless all of the following conditions are satisfied:
+
+* You are using a proxied environment with ssl termination;
+* The proxy provides sanitization or validation of the X-Forwarded-For header to prevent client spoofing;
+* /etc/tower/conf.d/remote_host_headers.py defines PROXY_IP_ALLOWED_LIST that contains only the originating IP addresses of trusted proxies or load balancers. 
+
+
+### Adding credentials to AAP
+
+#### Openshift API credentials
+
+* In the AAP web console go to Resources>Credentials
+* Click Add
+* Enter the credential name (arbitrary name)
+* Under "Credential Type" select "Openshift or Kubernetes API Bearer Token"
+* Under "OpenShift or Kubernetes API Endpoint" enter the API endpoint for the hub cluster: https://api.hub-dev-cci.refmobilecloud.ux.nl.tmo:6443
+* For bearer token you can either create a new service account or use a token from any OpenShift user. To obtain the token for existing user, log in ti OpenShift web console, in the top left corner click on the username, in the dropdown click "Copy login command". Copy the API token.
+* Paste the copied token in AAP dialogue under "API authentication bearer token"  
+* Uncheck "Verify SSL" in case you are not using "Certificate Authority data" certificate, otherwise paste the CA certificate in the "Certificate Authority data" textbox and leave "Verify SSL" checked
+
+#### Git credentials
+
+In the AAP web console go to Resources>Credentials
+* Click Add
+* Enter the credential name (arbitrary name)
+* Under "Credential Type" select "Source control credential"
+* Under "OpenShift or Kubernetes API Endpoint" enter the API endpoint for the hub cluster: https://api.hub-dev-cci.refmobilecloud.ux.nl.tmo:6443
+* For bearer token you can either create a new service account or use a token from any OpenShift user. To obtain the token for existing user, log in ti OpenShift web console, in the top left corner click on the username, in the dropdown click "Copy login command". Copy the API token.
+* Paste the copied token in AAP dialogue under "API authentication bearer token"
+* Uncheck "Verify SSL" in case you are not using "Certificate Authority data" certificate, otherwise paste the CA certificate in the "Certificate Authority data" tex
+tbox and leave "Verify SSL" checked
+
+#### Adding bastion host to AAP
+
+In order to execute automation manifests form AAP against OpenShift clusters we ned to add bastion host to AAP.
+
+We first need to create an inventory. In AAP web console:
+
+* Go to Resources>Inventory
+* Click Add
+* Under Name enter: bation inventory
+* Under Labels enter: bastion
+* Click Save
+
+To add host to created inventory:
+* Go to Resources>Hosts
+* Click Add
+* Under Name enter: Bastion host
+* In Inventory dropdown box click magnifier and select bastion inventory
+* Under Variables add th IP address of the bastion host:  
+
+
+
+
 ## RHACM RBAC
 
 The use case should setup a user "user1" using htpasswd identity provider. The user should be able to deploy apps on all clusters but should not be able to do anything to the infrastructure. user1 account is a prerequisite  
