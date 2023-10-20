@@ -1,5 +1,5 @@
 
-
+# RHACM
 
 ## Policies
 
@@ -210,6 +210,19 @@ oc edit profilebundle rhcos4
 These commands need to be run on each cluster where compliance operator was deployed. 
 
 
+## Troubleshooting RHACM
+
+### Channels
+
+When new channel is using the same git url and settings it cannot be created since it duplicates the resource. 
+
+Old channel has to be deleted.
+Channels are placed in namespaces named ggithubcom-*.
+Delete the namepace containing the conflicting channel.
+
+
+
+
 ## RHACS
 The policy named policy-advanced-cluster-security-central installs ACS operator and central. The placements.yaml is so configured to install this policy on hub cluster only. An additional policy named policy-advanced-cluster-security-managed install only ACS oprator on all managed clusters. Such setup is needed since central component is only installed on the hub cluster whereas secured services are installed on all clusters manually. The requirement for secured services is ACS operator installed.   
 
@@ -349,27 +362,26 @@ One loged in to AAP web console, there is a need to provide a subscription. Sinc
 
 ### Configuring proxy for AAP
 
-To configure a list of known proxies for your automation controller, add the proxy IP addresses to the PROXY_IP_ALLOWED_LIST field in the settings page for your automation controller.
+To configure a list of http proxies for your automation controller, add the proxy IP addresses to the EXTRA ENVIRONMENT VARIABLES field in the job settings page for your automation controller.
 
 #### Procedure
 
-On your automation controller, navigate to Settings → Miscellaneous System.
-In the PROXY_IP_ALLOWED_LIST field, enter IP addresses that are allowed to connect to your automation controller, following the syntax in the example below:
+Specify Environment Variables in the AAP Controller  UI. These can be found in the Job Settings area:
 
-Example PROXY_IP_ALLOWED_LIST entry
-
-[
-  "example1.proxy.com:8080",
-  "example2.proxy.com:8080"
-]
-Important:
-
-PROXY_IP_ALLOWED_LIST requires proxies in the list are properly sanitizing header input and correctly setting an X-Forwarded-For value equal to the real source IP of the client. Automation controller can rely on the IP addresses and hostnames in PROXY_IP_ALLOWED_LIST to provide non-spoofed values for the X-Forwarded-For field.
-Do not configure HTTP_X_FORWARDED_FOR as an item in `REMOTE_HOST_HEADERS`unless all of the following conditions are satisfied:
-
-* You are using a proxied environment with ssl termination;
-* The proxy provides sanitization or validation of the X-Forwarded-For header to prevent client spoofing;
-* /etc/tower/conf.d/remote_host_headers.py defines PROXY_IP_ALLOWED_LIST that contains only the originating IP addresses of trusted proxies or load balancers. 
+Settings  >  JOBS  > EXTRA ENVIRONMENT VARIABLES 
+Proxy settings can be placed here as well, in JSON format:
+````
+{
+  "HTTPS_PROXY": "http://10.254.102.198:3128",
+  "HTTP_PROXY": "http://10.254.102.198:3128",
+  "NO_PROXY": ".cluster.local,.svc,10.128.0.0/14,10.254.164.0/24,10.254.164.248,10.254.171.0/24,10.254.171.11,10.254.171.12,127.0.0.1,172.30.0.0/16,api-int.hub-dev-cci.refmobilecloud.ux.nl.tmo,localhost,refmobilecloud.ux.nl.tmo"
+}
+````
+NOTE 0: Add proxy settings to exiting variables, do not delete the existing ones.
+NOTE 1: Some programs using proxies will expect lower case vs. upper case env variable names. You can avoid this by setting both.
+NOTE 2: Some applications will have different implementations of the proxy environment variables. Example: git does not support CIDR notation for no_proxy or some applications will support the domain such as "NO_PROXY": "internal.domain".
+NOTE 3: Asterisk sign " * " is not supported while providing the domain information in the environment variable. For example, "*.example.com" will not work but ".example.com" will work for entire domain.
+NOTE 4: Not specifying "http://" or "https://" in the proxy address will trigger errors asking for <SCHEMA> in the variable string on some versions of Tower.
 
 
 ### Adding credentials to AAP
