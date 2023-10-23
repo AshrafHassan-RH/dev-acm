@@ -376,6 +376,7 @@ Do not configure HTTP_X_FORWARDED_FOR as an item in `REMOTE_HOST_HEADERS`unless 
 
 #### Openshift API credentials
 
+
 * In the AAP web console go to Resources>Credentials
 * Click Add
 * Enter the credential name (arbitrary name)
