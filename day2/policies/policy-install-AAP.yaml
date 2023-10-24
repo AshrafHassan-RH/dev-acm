@@ -98,7 +98,7 @@ spec:
                 apiVersion: eda.ansible.com/v1alpha1
                 kind: EDA
                 metadata:
-                  name: example
+                  name: eda
                   namespace: ansible-automation-platform
                 spec:
                   route_tls_termination_mechanism: Edge
