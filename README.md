@@ -495,14 +495,14 @@ oc get route -n ansible-automation-platform
 
 The admin user and password can be fetched from the secret in ansible-automation-platform namespace using web console:
 
-* Go to Workloads>Serets in the left side menu
-* In the Project dropdown choose ansible-automation-platform
-* Scroll down to secret named example-admin-password
+1. Go to Workloads>Serets in the left side menu
+2. In the Project dropdown choose ansible-automation-platform
+3. Scroll down to secret named example-admin-password
 Note: In our case the name of the instance iscalled example. If any other name instane name was used during AAP deployment the name will follow this rule: <instance-name>-admin-password
-* Click on the secret to reveal secret details
-* Scroll down and click Reveal values
-* Copy the secret and use it to login to AAP web console
-* Built in user for accessing the web console is admin 
+4. Click on the secret to reveal secret details
+5. Scroll down and click Reveal values
+6. Copy the secret and use it to login to AAP web console
+7. Built in user for accessing the web console is admin 
 
 The same procedure is valid for EDA, you only need to search for the eda-admin-password in the ansible-automation-platform namespace
 
@@ -510,24 +510,24 @@ The same procedure is valid for EDA, you only need to search for the eda-admin-p
 
 Once loged in to AAP web console, there is a need to provide a subscription. Since no proxy is configured, and it cannot be configured before subscription is applied,you need to download a subscription manifest from RH portal.
 
-* Follow the link provided in "subscription allocations" hyperlink
-* Login using your Red Hat Customer Portal credentials
-* From the Subscription Allocations page, click New Subscription Allocation.
-* Enter a name for the allocation so that you can find it later.
-* Select Type: Satellite 6.8 as the management application.
-* Click Create, This will create the subscription allcation named by the provided name.
-* Click on the tab Subscriptions. 
-* If AAP subscription is not already in the list click Add Subscriptions
-* In the Search box under "Add Subscriptions <Subscription Allocation Name> type "ansible"
-* For subscription named "60 Day Product Trial of Red Hat Ansible Automation Platform, Self-Supported (100 Managed Nodes)" enter number of entitlements: 50
-* Click "Submit"
-* Click "Export Manifest". This will start the download of the zip file containing the manifest.
-* On your AAP instance web console click "Browse" to upload a downloaded manifest.
-* Select the downloaded manifest
-* Click next
-* Under "User and Automation Analytics, deselect all chekboxes and click next
-* Under "End user license agreement" click Submit
-* You should see the empty AAP dashboard using web console
+1. Follow the link provided in "subscription allocations" hyperlink
+2. Login using your Red Hat Customer Portal credentials
+3. From the Subscription Allocations page, click New Subscription Allocation.
+4. Enter a name for the allocation so that you can find it later.
+5.  Select Type: Satellite 6.8 as the management application.
+6. Click Create, This will create the subscription allcation named by the provided name.
+7. Click on the tab Subscriptions. 
+8. If AAP subscription is not already in the list click Add Subscriptions
+9. In the Search box under "Add Subscriptions <Subscription Allocation Name> type "ansible"
+10. For subscription named "60 Day Product Trial of Red Hat Ansible Automation Platform, Self-Supported (100 Managed Nodes)" enter number of entitlements: 50
+11. Click "Submit"
+12. Click "Export Manifest". This will start the download of the zip file containing the manifest.
+13. On your AAP instance web console click "Browse" to upload a downloaded manifest.
+14. Select the downloaded manifest
+15. Click next
+16. Under "User and Automation Analytics, deselect all chekboxes and click next
+17. Under "End user license agreement" click Submit
+18, You should see the empty AAP dashboard using web console
 
 ### Configuring proxy for AAP
 
@@ -553,33 +553,56 @@ NOTE 3: Some applications will have different implementations of the proxy envir
 NOTE 4: Asterisk sign " * " is not supported while providing the domain information in the environment variable. For example, "*.example.com" will not work but ".example.com" will work for entire domain.
 NOTE 5: Not specifying "http://" or "https://" in the proxy address will trigger errors asking for <SCHEMA> in the variable string on some versions of Tower.
 
+### Creating service account on OCP for AAP
 
+In order to allow AAP doing configurations on OCP hub cluster we need to create a service account and clusterrolebinding for that service account.
+
+On bastion host run these commands on th hub cluster:
+
+1. Create service account and clusterrolebinding
+
+````
+oc apply -f bootstrap/aap-prerequisites/service-account.yaml
+````
+
+2. Get the token for the service account 
+
+````
+oc describe secrets aap-service-account-token-qm8dg -n default
+````
+Note: Secret is created in the default namespace because service account is created in that namespace. Check the AAP/service-account.yaml about the details.
+Secrets are created accordign to service account name: <account_name>-token-<random_id>. In our case, secret name is aap-service-account-token-qm8dg 
+
+Copy the token and paste it in the appropriate field descibed in the chapter "Openshift API credentials"
 
 ### Adding credentials to AAP
 
 #### Openshift API credentials
 
 
-* In the AAP web console go to Resources>Credentials
-* Click Add
-* Enter the credential name (arbitrary name)
-* Under "Credential Type" select "Openshift or Kubernetes API Bearer Token"
-* Under "OpenShift or Kubernetes API Endpoint" enter the API endpoint for the hub cluster: https://api.hub-dev-cci.refmobilecloud.ux.nl.tmo:6443
-* For bearer token you can either create a new service account or use a token from any OpenShift user. To obtain the token for existing user, log in ti OpenShift web console, in the top left corner click on the username, in the dropdown click "Copy login command". Copy the API token.
-* Paste the copied token in AAP dialogue under "API authentication bearer token"  
-* Uncheck "Verify SSL" in case you are not using "Certificate Authority data" certificate, otherwise paste the CA certificate in the "Certificate Authority data" textbox and leave "Verify SSL" checked
+1. In the AAP web console go to Resources>Credentials
+2. Click Add
+3. Enter the credential name under "Name"
+4. Under "Credential Type" select "Openshift or Kubernetes API Bearer Token"
+5. Under "OpenShift or Kubernetes API Endpoint" enter the API endpoint for the hub cluster: https://api.hub-dev-cci.refmobilecloud.ux.nl.tmo:6443
+6. For bearer token, use the one you created by following the procedure in section "Creating service account on OCP for AAP"
+7. Paste the copied token in AAP dialogue under "API authentication bearer token"  
+8. Uncheck "Verify SSL" in case you are not using "Certificate Authority data" certificate, otherwise paste the CA certificate in the "Certificate Authority data" textbox and leave "Verify SSL" checked
+9. Click "Save"
+Note: Use this comand to extract ca.crt from the Secret, in case needed
+````
+oc get secret aap-service-account-token-qm8dg -n default  -o jsonpath="{.data['ca\.crt']}" |base64 -d
+````
 
 #### Git credentials
 
 In the AAP web console go to Resources>Credentials
-* Click Add
-* Enter the credential name (arbitrary name)
-* Under "Credential Type" select "Source control credential"
-* Under "OpenShift or Kubernetes API Endpoint" enter the API endpoint for the hub cluster: https://api.hub-dev-cci.refmobilecloud.ux.nl.tmo:6443
-* For bearer token you can either create a new service account or use a token from any OpenShift user. To obtain the token for existing user, log in ti OpenShift web console, in the top left corner click on the username, in the dropdown click "Copy login command". Copy the API token.
-* Paste the copied token in AAP dialogue under "API authentication bearer token"
-* Uncheck "Verify SSL" in case you are not using "Certificate Authority data" certificate, otherwise paste the CA certificate in the "Certificate Authority data" tex
-tbox and leave "Verify SSL" checked
+1. Click Add
+2. Enter the credential name under "Name" 
+3. Under "Credential Type" select "Source control credential"
+4. Under "Username", enter your github username.
+5. Under "Password"  paste the personal github token.
+6. Click "Save"
 
 #### Adding bastion host to AAP
 
@@ -600,6 +623,41 @@ To add host to created inventory:
 * In Inventory dropdown box click magnifier and select bastion inventory
 * Under Variables add th IP address of the bastion host:  
 
+#### Creating a Project 
+
+Ansible Ansible Platform manages different automation tasks using Projects. Project combines and puts into relation Credentials, Inventories/Hosts, and Ansible playbooks in git repos. Project can also be assigned to specific organization/team.
+
+In order to create a Project follow the procedure:
+1. In AAP web console go to Resources > Projects
+2. Click Add
+3. Under "Name" add the name for the project.
+4. Click magnifier under "Organization", choose "Infrastructure"
+5. Click magnifier under "Execution Environment", choose "Default execution environment"
+6. Under "Source Control Type" select "Git". This will open additional configuration texboxes
+7. Under "Source Control URL" enter the URL for your repo. Use https URL
+8. Under "Source Control Branch/Tag/Commit" provide the name of the branch
+9. Click magnifier under  "Source Control Credential", choose the credential name you created following the procedure in "Git credentials" section.
+10. Click "Save"       
+
+Note: There is already a project created named AAP Demo. The project should provide a showcase for a couple of usecases.
+
+#### Creating Job Templates
+
+Job Templates 
+
+To configure Job Template follow the procedure:
+1. In AAP web console go to Resources > Templates
+2. Under "Name" add the name for the Job Template
+3. Click magnifier under "Inventory", choose localhost
+4. Click magnifier under "Project", choose the project you created following the procedure in "Creating a project" section.
+5. Click magnifier under "Playbook", choose the playbook you want to use with your Template. In our example we use the playbook named acm_gitops.yaml which covers one of our use-cases. The playbook is fetched from github repo using the credentials created.
+6. Click magnifier under "Credentials"
+7. For "Selected Category" choose Openshift or Kubernetes API Token.
+8. Choose the credential created by following the proceure in "Openshift API credentials" section
+9. Click "Save"
+   
+
+Note: There is already a Job Template named "integrate gitops with ACM" created. This job template is configuring the integration for RHACM and gitops. It applies a couple of yaml manifests in order to enable Application set for Applications in RHACM. This feature allows us to deploy applications to managed clsuters using ArgoCD. 
 
 
 

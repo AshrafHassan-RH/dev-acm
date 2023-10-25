@@ -7,3 +7,15 @@
       kubernetes.core.k8s:
         state: present
         src: ../rhacm-gitops/01_managedclustersetbinding.yaml 
+
+    - name: Configure Placement
+      kubernetes.core.k8s:
+        state: present
+        src: ../rhacm-gitops/02_placement.yaml 
+
+    - name: Configure gitopscluster
+      kubernetes.core.k8s:
+        state: present
+        src: ../rhacm-gitops/03_gitopscluster.yaml 
+     
+   
