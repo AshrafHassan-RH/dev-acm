@@ -1,0 +1,9 @@
+---
+- name: Playbook to integrate gitops with RHACM
+  hosts: localhost
+  connection: local
+  tasks:
+    - name: Configure managedclustersetbinding
+      kubernetes.core.k8s:
+        state: present
+        src: ../rhacm-gitops/01_managedclustersetbinding.yaml 
