@@ -1,5 +1,5 @@
 
-
+# RHACM
 
 ## Policies
 
@@ -119,7 +119,7 @@ oc apply -f /bootstrap/rhacm-gitops/03_gitopscluster.yaml
 
 ### Deploying workloads with gitops  
 
-When RHACM is configured to use gitops operator for the deployment of applications, we can use ApplicationSet to deploy any kind of workload. In that case ArgoCD managed bygitops operator on the hub cluster is subscribing to git repos where deployable workloads are defined. These workloads are then deployed to any of the managed clusters using Placements.   
+When RHACM is configured to use gitops operator for the deployment of applications, we can use ApplicationSet to deploy any kind of workload. In that case ArgoCD managed by gitops operator on the hub cluster is subscribing to git repos where deployable workloads are defined. These workloads are then deployed to any of the managed clusters using Placements.   
 
 
 #### Deploying multiclusterobservability using gitops
@@ -208,6 +208,172 @@ oc edit profilebundle rhcos4
 ````
 
 These commands need to be run on each cluster where compliance operator was deployed. 
+
+## Troubleshooting RHACM
+
+In situations when you cannot import managed cluster due to stale managed cluster ACM services you need to do a cleanup of those services on the managed cluster in order to b able to reimport cluster to ACM. This happens when cluster was detached and ACM servies on managed clusters did not clean up automatically.
+
+The typical error for this situation would be showing as a degraded kube-controller-manager cluster operator. Check the state of the operator using this command:
+````
+oc get co kube-controller-manager
+NAME                      VERSION   AVAILABLE   PROGRESSING   DEGRADED   SINCE   MESSAGE
+kube-controller-manager   4.12.19   True        False         True       39d     GarbageCollectorDegraded: alerts firing: GarbageCollectorSyncFailed 
+````
+
+The solution for this problem might not be straight forward as it might involve multiple steps, especially if ACm was used to deploy certain operators on managed clusters. In that case those opertors need to be cleaned up first. In our example, additional issue was with the terminal-operator.
+
+First part of the soultion is to cleanup the remains of Web Terminal Operator which is descibed in the following chapter.
+
+### Uninstalling the web terminal
+
+Uninstalling the Web Terminal Operator does not remove any of the custom resource definitions (CRDs) or managed resources that are created when the Operator is installed. For security purposes, you must manually uninstall these components. By removing these components, you save cluster resources because terminals do not idle when the Operator is uninstalled.
+
+Uninstalling the web terminal is a two-step process:
+
+1. Uninstall the Web Terminal Operator and related custom resources (CRs) that were added when you installed the Operator.
+
+2. Uninstall the DevWorkspace Operator and its related custom resources that were added as a dependency of the Web Terminal Operator.
+
+
+You can uninstall the web terminal by removing the Web Terminal Operator and custom resources used by the Operator.
+
+#### Prerequisites
+
+* Access to an OpenShift Container Platform cluster with cluster administrator permissions.
+
+* oc CLI installed on the bastion host
+
+#### Procedure
+1. In the Administrator perspective of the web console, navigate to Operators → Installed Operators.
+
+2. Scroll the filter list or type a keyword into the Filter by name box to find the Web Terminal Operator.
+
+3. Click the Options menu kebab for the Web Terminal Operator, and then select Uninstall Operator.
+
+In the Uninstall Operator confirmation dialog box, click Uninstall to remove the Operator, Operator deployments, and pods from the cluster. The Operator stops running and no longer receives updates.
+
+Remove the custom resources using oc CLI:
+
+````
+oc delete devworkspaces.workspace.devfile.io --all-namespaces --selector 'console.openshift.io/terminal=true' --wait
+
+oc delete devworkspacetemplates.workspace.devfile.io --all-namespaces  --selector 'console.openshift.io/terminal=true' --wait
+````
+
+
+### Removing the DevWorkspace Operator
+
+To completely uninstall the web terminal, the DevWorkspace Operator and custom resources used by the Operator have to be removed.
+
+The DevWorkspace Operator is a standalone Operator and may be required as a dependency for other Operators installed in the cluster. Follow the steps below only if you are sure that the DevWorkspace Operator is no longer needed.
+
+#### Prerequisites
+* Access to an OpenShift Container Platform cluster with cluster administrator permissions.
+
+* oc CLI installed on the bastion host
+
+#### Procedure
+
+1. Remove the DevWorkspace custom resources used by the Operator, along with any related Kubernetes objects:
+
+````
+oc delete devworkspaces.workspace.devfile.io --all-namespaces --all --wait
+
+oc delete devworkspaceroutings.controller.devfile.io --all-namespaces --all --wait
+````
+
+If this step is not complete, finalizers make it difficult to fully uninstall the Operator.
+
+2. Remove the CRDs used by the Operator:
+
+The DevWorkspace Operator provides custom resource definitions (CRDs) that use conversion webhooks. Failing to remove these CRDs can cause issues in the cluster.
+
+````
+oc delete customresourcedefinitions.apiextensions.k8s.io devworkspaceroutings.controller.devfile.io
+
+oc delete customresourcedefinitions.apiextensions.k8s.io devworkspaces.workspace.devfile.io
+
+$ oc delete customresourcedefinitions.apiextensions.k8s.io devworkspacetemplates.workspace.devfile.io
+
+$ oc delete customresourcedefinitions.apiextensions.k8s.io devworkspaceoperatorconfigs.controller.devfile.io
+````
+
+3. Verify that all involved custom resource definitions are removed. The following command should not display any output:
+
+````
+oc get customresourcedefinitions.apiextensions.k8s.io | grep "devfile.io"
+````
+
+4. Remove the devworkspace-webhook-server deployment, mutating, and validating webhooks:
+
+````
+oc delete deployment/devworkspace-webhook-server -n openshift-operators
+
+oc delete mutatingwebhookconfigurations controller.devfile.io
+
+oc delete validatingwebhookconfigurations controller.devfile.io
+````
+
+If you remove the devworkspace-webhook-server deployment without removing the mutating and validating webhooks, you can not use oc exec commands to run commands in a container in the cluster. After you remove the webhooks you can use the oc exec commands again.
+
+5. Remove any remaining services, secrets, and config maps. Depending on the installation, some resources included in the following commands may not exist in the cluster.
+
+````
+oc delete all --selector app.kubernetes.io/part-of=devworkspace-operator,app.kubernetes.io/name=devworkspace-webhook-server -n openshift-operators
+
+oc delete serviceaccounts devworkspace-webhook-server -n openshift-operators
+
+oc delete clusterrole devworkspace-webhook-server
+
+oc delete clusterrolebinding devworkspace-webhook-server
+````
+
+6. Uninstall the DevWorkspace Operator:
+
+In the Administrator perspective of the web console, navigate to Operators → Installed Operators.
+
+Scroll the filter list or type a keyword into the Filter by name box to find the DevWorkspace Operator.
+
+Click the Options menu with three dots for the Operator, and then select Uninstall Operator.
+
+In the Uninstall Operator confirmation dialog box, click Uninstall to remove the Operator, Operator deployments, and pods from the cluster. The Operator stops running and no longer receives updates.
+
+### Cleaning up stale RHACM resources
+
+Now proceed with cleaning up stale RHACM resources on the managed cluster. If a cluster is intended to be a HUB cluster of RHACM but later gets added as a MANAGED cluster, the HUB resources need to be properly removed, while keeping the resources required for MANAGED cluster.
+
+Keep in mind that reference cluster also had RHACM hub deployed because we were testing the difference between RHACM versions when we were troubleshooting the issue with no being able to deploy policies.
+
+
+
+After properly following the documented steps to remove RHACM and KCS, review the further stale resources associated to RHACM.
+
+1. Enlist all the correlated validatingwebhookconfigurations which were not removed following the above-documented steps. Proceed with removing them manually.
+
+````
+oc delete validatingwebhookconfiguration multiclusterengines.multicluster.openshift.io --ignore-not-found
+
+oc delete validatingwebhookconfiguration multiclusterhub.validating-webhook.open-cluster-management.io --ignore-not-found
+
+oc delete validatingwebhookconfiguration ocm.validating.webhook.admission.open-cluster-management.io --ignore-not-found
+````
+
+2. Enlist all managedclusterset and remove all finalizer from all the custom resources.
+
+````
+oc get managedclustersets
+
+oc patch managedclusterset local-cluster  -p '{"metadata":{"finalizers":null}}' --type=merge
+```
+
+3. In case there is no such managedclustersetcustom resouces, proceed with removing the relevant CRDs.
+
+````
+oc delete crd managedclustersetbindings.cluster.open-cluster-management.io --ignore-not-found
+
+oc delete crd managedclustersets.cluster.open-cluster-management.io --ignore-not-found
+````
+
 
 
 ## RHACS
@@ -299,15 +465,23 @@ oc delete project rhacs-operator
 
 ## AAP
 
-AAP is installed using policy day2/policies/policy-install-AAP.yaml
+AAP is installed using policy day2/policies/policy-install-AAP.yaml. The policy installs AAP controller as well as Event Driven Automation (EDA) 
 
-Current AAP web console URL is: https://example-ansible-automation-platform.apps.hub-dev-cci.refmobilecloud.ux.nl.tmo/
+Current AAP controller web console URL is: https://example-ansible-automation-platform.apps.hub-dev-cci.refmobilecloud.ux.nl.tmo/
 
-Current login:
+Current AAP controller login:
 admin
 mUgwXzWQ59sfvUoML8VwZyd298dQxgsD
 
-The AAP URL can be found using the command:  
+Current EDA web console URL is: https://eda-ansible-automation-platform.apps.hub-dev-cci.refmobilecloud.ux.nl.tmo/
+
+Current EDA login:
+admin
+Jx0Ot0D9btVcqohTZrj9s392dPc6LgVf
+
+
+
+Both  URLs can be found using the command:  
 
 ````
 oc get route -n ansible-automation-platform
@@ -324,9 +498,11 @@ Note: In our case the name of the instance iscalled example. If any other name i
 * Copy the secret and use it to login to AAP web console
 * Built in user for accessing the web console is admin 
 
+The same procedure is valid for EDA, you only need to search for the eda-admin-password in the ansible-automation-platform namespace
+
 ### Requesting subscription manifest
 
-One loged in to AAP web console, there is a need to provide a subscription. Since no proxy is configured, and it cannot be configured before subscription is applied,you need to download a subscription manifest from RH portal.
+Once loged in to AAP web console, there is a need to provide a subscription. Since no proxy is configured, and it cannot be configured before subscription is applied,you need to download a subscription manifest from RH portal.
 
 * Follow the link provided in "subscription allocations" hyperlink
 * Login using your Red Hat Customer Portal credentials
@@ -349,27 +525,28 @@ One loged in to AAP web console, there is a need to provide a subscription. Sinc
 
 ### Configuring proxy for AAP
 
-To configure a list of known proxies for your automation controller, add the proxy IP addresses to the PROXY_IP_ALLOWED_LIST field in the settings page for your automation controller.
+To configure a proxy for your automation controller, add the proxy IP addresses to the extra_environment_variables  field in the job  settings page for your automation controller.
 
 #### Procedure
 
-On your automation controller, navigate to Settings → Miscellaneous System.
-In the PROXY_IP_ALLOWED_LIST field, enter IP addresses that are allowed to connect to your automation controller, following the syntax in the example below:
+Specify Environment Variables in the AAP UI. These can be found in the Job Settings area:
 
-Example PROXY_IP_ALLOWED_LIST entry
+Settings>Jobs>Extra Environment Variables  
+Proxy settings can be placed here as well, in JSON format:
 
-[
-  "example1.proxy.com:8080",
-  "example2.proxy.com:8080"
-]
-Important:
+````
+{
+  "HTTPS_PROXY": "http://10.254.102.198:3128",
+  "HTTP_PROXY": "http://10.254.102.198:3128",
+  "NO_PROXY": ".cluster.local,.svc,10.128.0.0/14,10.254.164.0/24,10.254.164.248,10.254.171.0/24,10.254.171.11,10.254.171.12,127.0.0.1,172.30.0.0/16,api-int.hub-dev-cci.refmobilecloud.ux.nl.tmo,localhost,refmobilecloud.ux.nl.tmo"
+}
+````
+NOTE 1: Only append the proxy setting to the existing variables, do not delete the ones already defined! 
+NOTE 2: Some programs using proxies will expect lower case vs. upper case env variable names. You can avoid this by setting both.
+NOTE 3: Some applications will have different implementations of the proxy environment variables. Example: git does not support CIDR notation for no_proxy or some applications will support the domain such as "NO_PROXY": "internal.domain".
+NOTE 4: Asterisk sign " * " is not supported while providing the domain information in the environment variable. For example, "*.example.com" will not work but ".example.com" will work for entire domain.
+NOTE 5: Not specifying "http://" or "https://" in the proxy address will trigger errors asking for <SCHEMA> in the variable string on some versions of Tower.
 
-PROXY_IP_ALLOWED_LIST requires proxies in the list are properly sanitizing header input and correctly setting an X-Forwarded-For value equal to the real source IP of the client. Automation controller can rely on the IP addresses and hostnames in PROXY_IP_ALLOWED_LIST to provide non-spoofed values for the X-Forwarded-For field.
-Do not configure HTTP_X_FORWARDED_FOR as an item in `REMOTE_HOST_HEADERS`unless all of the following conditions are satisfied:
-
-* You are using a proxied environment with ssl termination;
-* The proxy provides sanitization or validation of the X-Forwarded-For header to prevent client spoofing;
-* /etc/tower/conf.d/remote_host_headers.py defines PROXY_IP_ALLOWED_LIST that contains only the originating IP addresses of trusted proxies or load balancers. 
 
 
 ### Adding credentials to AAP
