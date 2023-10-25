@@ -364,7 +364,7 @@ oc delete validatingwebhookconfiguration ocm.validating.webhook.admission.open-c
 oc get managedclustersets
 
 oc patch managedclusterset local-cluster  -p '{"metadata":{"finalizers":null}}' --type=merge
-```
+````
 
 3. In case there is no such managedclustersetcustom resouces, proceed with removing the relevant CRDs.
 
