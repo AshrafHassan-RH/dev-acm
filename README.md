@@ -645,6 +645,9 @@ Note: There is already a project created named AAP Demo. The project should prov
 
 Job Templates 
 
+In the Ansible Automation Platform (AAP), a job template is a fundamental concept that defines how Ansible should execute automation tasks. It provides a way to configure and control the execution of Ansible playbooks, job runs, and tasks. Job templates are used to streamline and automate the process of running Ansible automation on various systems, making it easier to execute tasks and enforce consistency in execution.
+
+
 To configure Job Template follow the procedure:
 1. In AAP web console go to Resources > Templates
 2. Under "Name" add the name for the Job Template
@@ -659,74 +662,20 @@ To configure Job Template follow the procedure:
 
 Note: There is already a Job Template named "integrate gitops with ACM" created. This job template is configuring the integration for RHACM and gitops. It applies a couple of yaml manifests in order to enable Application set for Applications in RHACM. This feature allows us to deploy applications to managed clsuters using ArgoCD. 
 
+#### Running Jobs
 
+Once all above configuration have bee applied, we can now run the defined Job template
 
-## RHACM RBAC
+To run a Job follow the procedure:
+1. In AAP web console go to Resources > Templates
+2. On the right side in a row for a template you want to run, click the rocket icon
+3. The output dialog will open. You can follow the output of the job execution
 
-The use case should setup a user "user1" using htpasswd identity provider. The user should be able to deploy apps on all clusters but should not be able to do anything to the infrastructure. user1 account is a prerequisite  
+Hint: You can increase verboseness of the output:
+1. In AAP web console go to Resources > Templates
+2. On the right side in a row for a template you want to edit, click pen icon
+3. Under "Verbosity" , select "Debug" in the dropdown menu
+4. Click "Save"
 
-
-oc new-project  apps-user1
-
-oc adm groups new group1
-
-oc adm groups add-users group1 user1
-
-oc create clusterrolebinding hub-cluster-view  --clusterrole=open-cluster-management:view:local-cluster --user=user1
-oc create clusterrolebinding prod-dev-cluster-admin  --clusterrole=open-cluster-management:admin:prod-dev-cci --user=user1
-oc create clusterrolebinding ref-cluster-view  --clusterrole=open-cluster-management:view:reference-cluster  --user=user1
-
-oc create rolebinding apps-user1-admin -n apps-user1 --clusterrole=admin --user=user1 - Allows user1 to create subscriptions in namespace apps-user1
-
-oc create clusterrolebinding  view-global-clusterset --clusterrole=open-cluster-management:managedclusterset:bind:global --user
-
-oc apply -f clusterrole.yaml
-
-oc apply -f rolebinding.yaml
-
-Check who can do what
-
-oc adm policy who-can create cluster.open-cluster-management.io/placements
-
-
-
-#REMOved 
-removed oc create clusterrolebinding managedclusterset-global-view  --clusterrole=open-cluster-management:managedclusterset:view:global --user=user1
-
-this one is removed:oc create clusterrolebinding subscription-admin --clusterrole=open-cluster-management:subscription-admin --user=user1
-
-removed oc create clusterrolebinding create-placements --clusterrole=placements.cluster.open-cluster-management.io:create --user=user1
-
-removed oc create clusterrolebinding create-apps --clusterrole=applications.app.k8s.io:create --user=user1
-
-removed oc create clusterrolebinding create-deployments --clusterrole=deployables.apps.k8s.io:create --user=user1
-
-
-applicationsets.argoproj.io is forbidden: User "user1" cannot create resource "applicationsets" in API group "argoproj.io" in the namespace "openshift-gitops": RBAC: [clusterrole.rbac.authorization.k8s.io "open-cluster-management:managedclusterset:admin:global" not found, clusterrole.rbac.authorization.k8s.io "placements.cluster.open-cluster-management.io:edit" not found]
-
-[root@cci-dev-eng ~]# oc edit profilebundle rhcos4^C
-[root@cci-dev-eng ~]# oc create clusterrolebinding user1-create-apps  --clusterrole=open-cluster-management:cluster-manager-admin --user=user1
-clusterrolebinding.rbac.authorization.k8s.io/user1-create-apps created
-[root@cci-dev-eng ~]# oc delete clusterrolebinding user1-create-apps
-clusterrolebinding.rbac.authorization.k8s.io "user1-create-apps" deleted
-[root@cci-dev-eng ~]# oc create clusterrolebinding user1-create-apps  --clusterrole=open-cluster-management:cluster-manager-admin --user=user1
-clusterrolebinding.rbac.authorization.k8s.io/user1-create-apps created
-[root@cci-dev-eng ~]# oc create clusterrolebinding <role-binding-name> --clusterrole=open-cluster-management:subscription-admin --user=<username>
--bash: syntax error near unexpected token `newline'
-[root@cci-dev-eng ~]# oc create clusterrolebinding <role-binding-name> --clusterrole=open-cluster-management:subscription-admin --user=<username>
--bash: syntax error near unexpected token `newline'
-[root@cci-dev-eng ~]# oc create clusterrolebinding user1-create-apps --clusterrole=open-cluster-management:subscription-admin --user=user1
-error: failed to create clusterrolebinding: clusterrolebindings.rbac.authorization.k8s.io "user1-create-apps" already exists
-[root@cci-dev-eng ~]# oc delete clusterrolebinding user1-create-apps
-clusterrolebinding.rbac.authorization.k8s.io "user1-create-apps" deleted
-[root@cci-dev-eng ~]# oc create clusterrolebinding user1-create-apps --clusterrole=open-cluster-management:subscription-admin --user=user1
-clusterrolebinding.rbac.authorization.k8s.io/user1-create-apps created
-[root@cci-dev-eng ~]# oc delete clusterrolebinding user1-create-apps
-clusterrolebinding.rbac.authorization.k8s.io "user1-create-apps" deleted
-[root@cci-dev-eng ~]# oc create clusterrolebinding user1-create-apps --clusterrole=open-cluster-management:admin:prod-dev-cci --user=user1
-clusterrolebinding.rbac.authorization.k8s.io/user1-create-apps created
-[root@cci-dev-eng ~]# oc delete clusterrolebinding user1-create-apps
-clusterrolebinding.rbac.authorization.k8s.io "user1-create-apps" deleted
-[root@cci-dev-eng ~]# oc create clusterrolebinding user1-prod-dev-cluster --clusterrole=open-cluster-management:admin:prod-dev-cci --user=user1
-clusterrolebinding.rbac.authorization.k8s.io/user1-prod-dev-cluster created
+ 
 
