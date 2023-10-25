@@ -81,7 +81,7 @@ oc -n <cluster-name> edit klusterletaddonconfig <cluster-name>
 Where <cluster-name> is the name which can be found in RHACM web console unser Infrastructure>Clusters under "Name" column.
    
   
-### Deploying Policies
+### Deploying Policies using RHACM Subscription
 
 In RHACM web console go to:  
 Applications>Create Application>Subscription
@@ -117,7 +117,7 @@ oc apply -f /bootstrap/rhacm-gitops/02_placement.yaml
 oc apply -f /bootstrap/rhacm-gitops/03_gitopscluster.yaml  
 ```
 
-### Deploying workloads with gitops  
+### Deploying RHACM policies with gitops  
 
 When RHACM is configured to use gitops operator for the deployment of applications, we can use ApplicationSet to deploy any kind of workload. In that case ArgoCD managed by gitops operator on the hub cluster is subscribing to git repos where deployable workloads are defined. These workloads are then deployed to any of the managed clusters using Placements.   
 
@@ -210,6 +210,9 @@ oc edit profilebundle rhcos4
 These commands need to be run on each cluster where compliance operator was deployed. 
 
 ## Troubleshooting RHACM
+
+
+### RHACM degraded due to stale RHACM repurces on managed cluster 
 
 In situations when you cannot import managed cluster due to stale managed cluster ACM services you need to do a cleanup of those services on the managed cluster in order to b able to reimport cluster to ACM. This happens when cluster was detached and ACM servies on managed clusters did not clean up automatically.
 
@@ -346,7 +349,7 @@ Keep in mind that reference cluster also had RHACM hub deployed because we were 
 
 
 
-After properly following the documented steps to remove RHACM and KCS, review the further stale resources associated to RHACM.
+After properly following the documented steps to remove [RHACM](https://access.redhat.com/documentation/en-us/red_hat_advanced_cluster_management_for_kubernetes/2.8/html/install/installing#uninstalling), review the further stale resources associated to RHACM.
 
 1. Enlist all the correlated validatingwebhookconfigurations which were not removed following the above-documented steps. Proceed with removing them manually.
 
@@ -373,6 +376,9 @@ oc delete crd managedclustersetbindings.cluster.open-cluster-management.io --ign
 
 oc delete crd managedclustersets.cluster.open-cluster-management.io --ignore-not-found
 ````
+
+### General RHACM troubleshooting
+
 
 
 
