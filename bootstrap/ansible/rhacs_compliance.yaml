@@ -31,5 +31,6 @@
     - name: Configure managedclustersetbinding
       kubernetes.core.k8s:
         state: present
+        namespace: openshift-compliance
         src: ../rhacs-compliance/sscan.yaml 
    

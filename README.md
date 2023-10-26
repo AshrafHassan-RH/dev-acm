@@ -455,7 +455,7 @@ oc patch -n openshift-compliance  scansetting/default  --type=merge  -p '{"rawRe
 ```` 
 3. Create a ScanSettingBinding object in the openshift-compliance namespace to scan the cluster by using the cis and cis-node profiles:
 ````
-oc apply -f  bootstrap/rhacs-compliance/sscan.yaml
+oc apply -f  bootstrap/rhacs-compliance/sscan.yaml -n openshift-compliance
 ````
 4. If compliance-operator was installed after RHACS, redeploy the sensor pod:
 ````
