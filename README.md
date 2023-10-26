@@ -382,7 +382,7 @@ oc delete crd managedclustersets.cluster.open-cluster-management.io --ignore-not
 
 
 
-## RHACS
+# RHACS
 The policy named policy-advanced-cluster-security-central installs ACS operator and central. The placements.yaml is so configured to install this policy on hub cluster only. An additional policy named policy-advanced-cluster-security-managed install only ACS oprator on all managed clusters. Such setup is needed since central component is only installed on the hub cluster whereas secured services are installed on all clusters manually. The requirement for secured services is ACS operator installed.   
 
 The admin password for central services is contained in secret called central-htpasswd in namespace stackrox on the hub cluster.
@@ -442,6 +442,34 @@ Secured services are installed on all managed clusters that need to be monitore.
 
 ### Integrating compliance operator with RHACS
  
+## Troubleshooting compliance operator
+
+The Compliance Operator emits Kubernetes events when something important happens. You can either view all events in the cluster using the command:
+````
+oc get events -n openshift-compliance
+````
+
+Or view events for an object like a scan using the command:
+````
+oc describe -n openshift-compliance compliancescan/cis-compliance
+````
+
+The Compliance Operator consists of several controllers, approximately one per API object. It could be useful to filter only those controllers that correspond to the API object having issues. If a ComplianceRemediation cannot be applied, view the messages from the remediationctrl controller. You can filter the messages from a single controller by parsing with jq:
+
+````
+oc -n openshift-compliance logs compliance-operator-775d7bddbd-gj58f
+| jq -c 'select(.logger == "profilebundlectrl")'
+````
+The timestamps are logged as seconds since UNIX epoch in UTC. To convert them to a human-readable date, use date -d @timestamp --utc, for example:
+
+````
+date -d @1596184628.955853 --utc
+````
+Many custom resources, most importantly ComplianceSuite and ScanSetting, allow the debug option to be set. Enabling this option increases verbosity of the OpenSCAP scanner pods, as well as some other helper pods.
+
+If a single rule is passing or failing unexpectedly, it could be helpful to run a single scan or a suite with only that rule to find the rule ID from the corresponding ComplianceCheckResult object and use it as the rule attribute value in a Scan CR. Then, together with the debug option enabled, the scanner container logs in the scanner pod would show the raw OpenSCAP logs.
+
+
 
 ### RHACS cleanup
 
