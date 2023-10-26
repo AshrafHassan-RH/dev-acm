@@ -15,6 +15,17 @@
           rawResultStorage:
             nodeSelector: null
          
-
+    - name: patch add worker  nodeselector
+      kubernetes.core.k8s:
+        state: patched
+        definition:
+          apiVersion: compliance.openshift.io/v1alpha1
+          kind: ScanSetting
+          metadata:
+            name: default
+            namespace: openshift-compliance
+          rawResultStorage:
+            nodeSelector: 
+              node-role.kubernetes.io/worker: ""
      
    
