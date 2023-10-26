@@ -1,0 +1,17 @@
+---
+- name: Playbook to integrate gitops with RHACM
+  
+  tasks:
+    - name: patch remove existing nodeselector
+      kubernetes.core.k8s:
+        state: patched
+        kind: ScanSetting
+        namespace: openshift-compliance
+        name: default
+          definition:
+            rawResultStorage:
+              nodeSelector: null
+         
+
+     
+   

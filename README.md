@@ -441,35 +441,32 @@ Secured services are installed on all managed clusters that need to be monitored
 
 ### Integrating compliance operator with RHACS
 
+RHACS can be configured to use the Compliance Operator for compliance reporting and remediation with OpenShift Container Platform clusters. That way the results from the Compliance Operator are  reported in the RHACS Compliance Dashboard.
 
- 
-## Troubleshooting compliance operator
+Before applying ScanSettingBinding, the default scan setting needs to be adjusted so receiver pods are not scheduled on the master nodes which cannot provision storage due to missconfiguration/bug in the compliance operator: https://bugzilla.redhat.com/show_bug.cgi?id=1963040
 
-The Compliance Operator emits Kubernetes events when something important happens. You can either view all events in the cluster using the command:
+1. Patch the default scan setting to remove previous node selector:
 ````
-oc get events -n openshift-compliance
+oc patch -n openshift-compliance  scansetting/default  --type=merge  -p '{"rawResultStorage": {"nodeSelector": null}}'
+````
+2. Patch it once again to configure the nodeselector for worker nodes:
+````
+oc patch -n openshift-compliance  scansetting/default  --type=merge  -p '{"rawResultStorage": {"nodeSelector": {"node-role.kubernetes.io/worker": ""}}}'
+```` 
+3. Create a ScanSettingBinding object in the openshift-compliance namespace to scan the cluster by using the cis and cis-node profiles:
+````
+oc apply -f  bootstrap/rhacs-compliance/sscan.yaml
+````
+4. If compliance-operator was installed after RHACS, redeploy the sensor pod:
+````
+oc -n stackrox delete pod -lapp=sensor
 ````
 
-Or view events for an object like a scan using the command:
-````
-oc describe -n openshift-compliance compliancescan/cis-compliance
-````
-
-The Compliance Operator consists of several controllers, approximately one per API object. It could be useful to filter only those controllers that correspond to the API object having issues. If a ComplianceRemediation cannot be applied, view the messages from the remediationctrl controller. You can filter the messages from a single controller by parsing with jq:
-
-````
-oc -n openshift-compliance logs compliance-operator-775d7bddbd-gj58f
-| jq -c 'select(.logger == "profilebundlectrl")'
-````
-The timestamps are logged as seconds since UNIX epoch in UTC. To convert them to a human-readable date, use date -d @timestamp --utc, for example:
-
-````
-date -d @1596184628.955853 --utc
-````
-Many custom resources, most importantly ComplianceSuite and ScanSetting, allow the debug option to be set. Enabling this option increases verbosity of the OpenSCAP scanner pods, as well as some other helper pods.
-
-If a single rule is passing or failing unexpectedly, it could be helpful to run a single scan or a suite with only that rule to find the rule ID from the corresponding ComplianceCheckResult object and use it as the rule attribute value in a Scan CR. Then, together with the debug option enabled, the scanner container logs in the scanner pod would show the raw OpenSCAP logs.
-
+After performing these steps, run a compliance scan in RHACS and ensure that ocp4-cis and ocp4-cis-node results are displayed:
+  
+1. In RHACS web UI go to Compliance 
+2. Click "Manage"standards"
+3. Select ocp4-cis and ocp4-cis-node, for this exercise, deselect all other standdards. 
 
 
 ### RHACS cleanup
