@@ -116,6 +116,7 @@ oc apply -f /bootstrap/rhacm-gitops/01_managedclustersetbinding.yaml
 oc apply -f /bootstrap/rhacm-gitops/02_placement.yaml  
 oc apply -f /bootstrap/rhacm-gitops/03_gitopscluster.yaml  
 ```
+Note: This has been implemented using AAP, job template > integrate gitops with ACM
 
 ### Deploying RHACM policies with gitops  
 
@@ -476,26 +477,50 @@ If a single rule is passing or failing unexpectedly, it could be helpful to run 
 Sometimes there is a need to have multiple attempts when using policies to deploy operators, especially when developing and testing new policies.
 In order to deploy operators using policies we need to cleanup previous deployments by hand.
 
+````
+oc delete namespace stackrox
+
+oc get clusterrole,clusterrolebinding,role,rolebinding -o name | grep stackrox | xargs oc delete --wait
+
+oc delete scc -l "app.kubernetes.io/name=stackrox"
+
+oc delete ValidatingWebhookConfiguration stackrox
+
+for namespace in $(oc get ns | tail -n +2 | awk '{print $1}'); do     oc label namespace $namespace namespace.metadata.stackrox.io/id-;     oc label namespace $namespace namespace.metadata.stackrox.io/name-;     oc annotate namespace $namespace modified-by.stackrox.io/namespace-label-patcher-;   done
+
+oc delete namespace rhacs-operator
+````
+
 The cleanup usually encompasses uninstalling the operator from the web console and cleaning up namespace created during operator installation.
-When deleting namespace rhacs-operator, it iwll be stuck in termination phase. The cause of this is that not all resources in the namespace are deleted during operator uninstall.
+When deleting namespace rhacs-operator, it it will be stuck in termination phase. The cause of this is that not all resources in the namespace are deleted during operator uninstall.
 
 To address this issue execute these commands:
 ````
 oc api-resources --verbs=list --namespaced -o name | xargs -t -n 1 oc get --show-kind --ignore-not-found -n rhacs-operator
 ````
-The output will show that this resource is not deleted: 
+The output will show that these resource is not deleted: 
 ````
-NAME                                                     AGE
-central.platform.stackrox.io/stackrox-central-services   4d3h
+NAME                                                                   AGE
+central.platform.stackrox.io/stackrox-central-services                 4d3h
+securedcluster.platform.stackrox.io/stackrox-secured-cluster-services  4d3h 
 ````
-Delete that resource
+Delete these resources if found:
 ````
 oc delete central.platform.stackrox.io/stackrox-central-services -n rhacs-operator
+
+oc delete securedcluster.platform.stackrox.io/stackrox-secured-cluster-services 
 ````
-Delete the namespace if not already deleted
+
+If these resources are also stuck in termination phase, you need to patch them to remove dependency to finalizers:
 ````
-oc delete project rhacs-operator
+oc patch -n rhacs-operator central.platform.stackrox.io/stackrox-central-services --type=merge -p '{"metadata": {"finalizers":null}}'
+
+oc patch -n rhacs-operator securedcluster.platform.stackrox.io/stackrox-secured-cluster-services --type=merge -p '{"metadata": {"finalizers":null}}'
 ````
+
+
+
+Note: This procedure needs to be done on all clusters.
 
 ## AAP
 
