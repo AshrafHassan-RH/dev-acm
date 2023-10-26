@@ -28,7 +28,7 @@
             nodeSelector: 
               node-role.kubernetes.io/worker: ""
 
-    - name: Configure managedclustersetbinding
+    - name: Configure ScanSettingBinding with CIS Profile 
       kubernetes.core.k8s:
         state: present
         namespace: openshift-compliance
