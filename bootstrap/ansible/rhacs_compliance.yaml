@@ -17,7 +17,7 @@
          
     - name: patch add worker  nodeselector
       kubernetes.core.k8s:
-        state: patched
+        state: present
         definition:
           apiVersion: compliance.openshift.io/v1alpha1
           kind: ScanSetting
@@ -27,5 +27,9 @@
           rawResultStorage:
             nodeSelector: 
               node-role.kubernetes.io/worker: ""
-     
+
+    - name: Configure managedclustersetbinding
+      kubernetes.core.k8s:
+        state: present
+        src: ../rhacs-compliance/sscan.yaml 
    
