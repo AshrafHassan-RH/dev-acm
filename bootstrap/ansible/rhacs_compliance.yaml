@@ -6,7 +6,7 @@
     - name: patch remove existing nodeselector
       kubernetes.core.k8s:
         state: patched
-        kind: ScanSetting
+        kind: scansetting
         namespace: openshift-compliance
         name: default
         definition:
