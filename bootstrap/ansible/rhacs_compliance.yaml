@@ -8,9 +8,9 @@
         kind: ScanSetting
         namespace: openshift-compliance
         name: default
-          definition:
-            rawResultStorage:
-              nodeSelector: null
+        definition:
+          rawResultStorage:
+            nodeSelector: null
          
 
      
