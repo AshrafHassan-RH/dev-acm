@@ -1,6 +1,6 @@
 ---
 - name: Playbook to integrate gitops with RHACM
-  
+  hosts: loclhost
   tasks:
     - name: patch remove existing nodeselector
       kubernetes.core.k8s:
