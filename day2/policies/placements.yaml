@@ -102,9 +102,9 @@ subjects:
   - name: policy-install-aap
     apiGroup: policy.open-cluster-management.io
     kind: Policy
-  - name: policy-advanced-cluster-security-central
-    apiGroup: policy.open-cluster-management.io
-    kind: Policy
+  #- name: policy-advanced-cluster-security-central
+  #  apiGroup: policy.open-cluster-management.io
+  #  kind: Policy
 ---
 apiVersion: policy.open-cluster-management.io/v1
 kind: PlacementBinding
@@ -115,7 +115,7 @@ placementRef:
   name: placement-policies-all-managed-only
   apiGroup: cluster.open-cluster-management.io
   kind: Placement
-subjects:
-  - name: policy-advanced-cluster-security-managed
-    apiGroup: policy.open-cluster-management.io
-    kind: Policy
+#subjects:
+#  - name: policy-advanced-cluster-security-managed
+#    apiGroup: policy.open-cluster-management.io
+#    kind: Policy
