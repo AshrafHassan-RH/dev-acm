@@ -394,7 +394,7 @@ Admin console: https://central-stackrox.apps.hub-dev-cci.refmobilecloud.ux.nl.tm
 
 
 User: admin
-Password: G6s1jsJLZmZyPjYIaz0f9EjA3
+Password: 0VsIj3u75RjY4SVZWdHurv9Gi
 
 
 ### Generating init-bundle
@@ -411,18 +411,15 @@ You must have the Admin user role to create an init bundle.
 * Either copy the file or copy it's content and create a new file on the host with access to oc client.
 * Using the Red Hat OpenShift CLI, run the following command to create the resources:
 
-To configure init-bundle on hub cluster:
+To configure init-bundle on all  clusters:
 ````
-$ oc create -f rhacs-init-cluster-init-secrets.yaml -n stackrox
+$ oc create -f rhacs-init-cluster-init-secrets.yaml -n rhacs-operator
 ````
-To configure init-bundle on managed clusters:
-````
-oc apply -f RHACS/rhacs-init-cluster-init-secrets.yaml -n rhacs-operator
-````
+
 
 ### Installing secured services
 
-Secured services are installed on all managed clusters that need to be monitore. This usually includes all clusters together with hub cluster.
+Secured services are installed on all managed clusters that need to be monitored. This usually includes all clusters together with hub cluster.
 
 #### Prerequisites
 
@@ -433,6 +430,7 @@ Secured services are installed on all managed clusters that need to be monitore.
 #### Procedure
 
 * On the OpenShift Container Platform web console, navigate to the Operators → Installed Operators page.
+* Select "All Projects in the top toolbar
 * Click the RHACS Operator.
 * Click Secured Cluster from the central navigation menu in the Operator details page.
 * Click Create SecuredCluster.
@@ -442,6 +440,8 @@ Secured services are installed on all managed clusters that need to be monitore.
 
 
 ### Integrating compliance operator with RHACS
+
+
  
 ## Troubleshooting compliance operator
 

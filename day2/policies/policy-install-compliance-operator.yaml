@@ -24,6 +24,9 @@ spec:
                 apiVersion: v1
                 kind: Namespace
                 metadata:
+                  labels:
+                    openshift.io/cluster-monitoring: "true"
+                    pod-security.kubernetes.io/enforce: privileged 
                   name: openshift-compliance
     - objectDefinition:
         apiVersion: policy.open-cluster-management.io/v1
@@ -61,6 +64,7 @@ spec:
                   name: compliance-operator
                   namespace: openshift-compliance
                 spec:
+                  channel: stable
                   name: compliance-operator
                   installPlanApproval: Automatic
                   source: redhat-operators
