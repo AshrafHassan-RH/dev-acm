@@ -11,9 +11,11 @@
         executable: /bin/bash
       register: stdout
 
-    #- set_fact:
+    - debug:
+        var: stdout
+    - set_fact:
     #    myvalue: "{{ results.stdout }}"
     #  vars:
     #    regexp: 'value=\"([^"]+)'
-    - debug:
-        var: stdout
+    - debug: 
+        var: myvalue
