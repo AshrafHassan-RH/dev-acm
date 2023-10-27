@@ -34,4 +34,4 @@
 
     - name: Print only nodename
       debug:
-        var: nodename
+        var: node_name
