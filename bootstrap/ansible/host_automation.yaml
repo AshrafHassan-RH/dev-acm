@@ -9,3 +9,11 @@
         exit 0
       args:
         executable: /bin/bash
+      register: stdout
+
+    #- set_fact:
+    #    myvalue: "{{ results.stdout }}"
+    #  vars:
+    #    regexp: 'value=\"([^"]+)'
+    - debug:
+        var: stdout
