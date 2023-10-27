@@ -20,3 +20,5 @@
     #    regexp: 'value=\"([^"]+)'
     - debug: 
         var: myvalue
+    - debug:
+        var: myvalue[0]
