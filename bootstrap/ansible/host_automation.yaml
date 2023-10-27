@@ -30,7 +30,7 @@
 
     - name: Print only nodename
       set_fact:
-        node_name: "{{ myvalue[1] | regex_search('/^\S*') }}"
+        node_name: "{{ myvalue[1] | regex_search("^\S*") }}"
 
     - name: Print only nodename
       debug:
