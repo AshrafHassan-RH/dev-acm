@@ -35,3 +35,15 @@
     - name: Print only nodename
       debug:
         var: node_name
+    
+    - name: use oc comands with extracted nodename
+      ansible.builtin.shell: |
+        oc describe node "{{ node_name }}" 
+        exit 0
+      args:
+        executable: /bin/bash
+      register: describe_out
+
+    - name: Print describe output
+      debug:
+        var: describe_out.stdout_lines
