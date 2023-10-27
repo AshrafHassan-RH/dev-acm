@@ -1,6 +1,6 @@
 ---
 - name: Playbook to run commands on the bastion host
-  
+  hosts: all
   tasks:
     - name: Run expect to wait for a successful PXE boot via out-of-band CIMC
       ansible.builtin.shell: |
