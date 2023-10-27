@@ -30,4 +30,4 @@
 
     - name: Print only nodename
       debug:
-        var: "{{myvalue[1]|regex_search('^\s+')}}"
+        var: {{myvalue[1] | regex_search('^\s+')}}
