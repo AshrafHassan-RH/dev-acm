@@ -24,6 +24,10 @@
       debug:   
         var: myvalue
     
-    - name: Print only first node name
+    - name: Print only first node line
       debug:
         var: myvalue[1]
+
+    - name: Print only nodename
+      debug:
+        var: {{ myvalue[1]|regex_search('[^\s]+')}}
