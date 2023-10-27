@@ -109,6 +109,8 @@ Once all the information is filled in click "Create" in the header of the dialog
 
 ### Setting up GitOps with RHACM
 
+Note: This has been implemented using AAP, job template > integrate gitops with ACM
+
 To integrate GitOps with RHACM, all RHACM managed clusters need to be registered to an instance of GitOps operator running on the hub cluster. Once this is configured, applications can be deployed to those clusters using ArgoCD. To achieve this run the following commands on the hub cluster:
 
 ```
@@ -116,7 +118,6 @@ oc apply -f /bootstrap/rhacm-gitops/01_managedclustersetbinding.yaml
 oc apply -f /bootstrap/rhacm-gitops/02_placement.yaml  
 oc apply -f /bootstrap/rhacm-gitops/03_gitopscluster.yaml  
 ```
-Note: This has been implemented using AAP, job template > integrate gitops with ACM
 
 ### Deploying RHACM policies with gitops  
 
@@ -297,9 +298,9 @@ oc delete customresourcedefinitions.apiextensions.k8s.io devworkspaceroutings.co
 
 oc delete customresourcedefinitions.apiextensions.k8s.io devworkspaces.workspace.devfile.io
 
-$ oc delete customresourcedefinitions.apiextensions.k8s.io devworkspacetemplates.workspace.devfile.io
+oc delete customresourcedefinitions.apiextensions.k8s.io devworkspacetemplates.workspace.devfile.io
 
-$ oc delete customresourcedefinitions.apiextensions.k8s.io devworkspaceoperatorconfigs.controller.devfile.io
+oc delete customresourcedefinitions.apiextensions.k8s.io devworkspaceoperatorconfigs.controller.devfile.io
 ````
 
 3. Verify that all involved custom resource definitions are removed. The following command should not display any output:
@@ -440,6 +441,8 @@ Secured services are installed on all managed clusters that need to be monitored
 
 
 ### Integrating compliance operator with RHACS
+
+Note: This has already been covered by the Ansible Automation Platform in Job Template: rhacs-compliance.
 
 RHACS can be configured to use the Compliance Operator for compliance reporting and remediation with OpenShift Container Platform clusters. That way the results from the Compliance Operator are  reported in the RHACS Compliance Dashboard.
 
