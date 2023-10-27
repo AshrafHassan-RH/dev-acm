@@ -4,6 +4,7 @@
   tasks:
     - name: Run expect to wait for a successful PXE boot via out-of-band CIMC
       ansible.builtin.shell: |
+        source .bashrc
         login_hub
         oc get node 
         exit 0
@@ -14,7 +15,7 @@
     - debug:
         var: output
     - set_fact:
-        myvalue: "{{ output.stdout }}"
+        myvalue: "{{ output.stdout_lines }}"
     #  vars:
     #    regexp: 'value=\"([^"]+)'
     - debug: 
