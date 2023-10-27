@@ -12,13 +12,18 @@
         executable: /bin/bash
       register: output
 
-    - debug:
+    - name: Print all output
+      debug:
         var: output
-    - set_fact:
+
+    - name: assign output to variable
+      set_fact:
         myvalue: "{{ output.stdout_lines }}"
-    #  vars:
-    #    regexp: 'value=\"([^"]+)'
-    - debug: 
+
+    - name: Print myvalue
+      debug:   
         var: myvalue
-    - debug:
-        var: myvalue[0]
+    
+    - name: Print only first node name
+      debug:
+        var: myvalue[1]
