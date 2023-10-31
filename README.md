@@ -647,6 +647,8 @@ Note: Use this comand to extract ca.crt from the Secret, in case needed
 oc get secret aap-service-account-token-qm8dg -n default  -o jsonpath="{.data['ca\.crt']}" |base64 -d
 ````
 
+Note: This procedure needs to be done on all clusters which need to be accessed by AAP.
+
 #### Git credentials
 
 In the AAP web console go to Resources>Credentials
