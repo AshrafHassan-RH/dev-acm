@@ -72,7 +72,8 @@ applicationManager:
 
 After this fix Policies are successfully deplyed using Applications>Subscription.
 
-Note: This procedure needs to be done for addons on all managed clusters. The procedure is done on a hub cluster where klusterletaddonconfig exists in a namespace named after each managed cluster.
+> **Note** 
+> This procedure needs to be done for addons on all managed clusters. The > procedure is done on a hub cluster where klusterletaddonconfig exists in a namespace named after each managed cluster.
 
 For example:
 ```
@@ -733,4 +734,66 @@ Hint: You can increase verboseness of the output:
 4. Click "Save"
 
  
+### Configuring EDA (Event Driven Ansible)
 
+
+#### Creating decision environmrnt
+
+We will use the default decsision environment container image
+
+1. In EDA click on Resources > Decision Environments
+2. Click "Create decision Environment"
+3. Enter the following details in the dialog:
+Name: default 
+Description: default
+Image: quay.io/ansible/ansible-rulebook
+4. Click "Save"
+
+
+#### Creating access token on AAP for EDA
+
+1. Go to Administration --> Applications
+
+2. Click "Add Application"
+
+3. Fill in the details as follows: 
+
+Name: Personal Access Token for EDA
+Description: Personal Access Token
+Organization: Default
+Authorization Grant Type: Resource owner password-based
+Client Type: Public
+
+4. Click "Save".  A token will be created.
+5. Go to Users --> Admin --> Tokens
+6. Click "Add"
+7. Click the magnifier icon and choose "Personal Access Token for EDA"
+8. Under "Scope" choose > Write
+9. Click "Save".  A token and refresh token will be shown.  Save this as it will be needed later.
+
+
+
+
+#### Connecting EDA to AAP Controller using access token 
+
+1. On the EDA, go to Users --> Admin --> Controller Tokens.  
+2. Click "Create controller token"
+3. Fill in the following information
+Name: Connection to AAP
+Desription: Connection to AAP
+Token: Copied/pasted from output in step 9. under "Creating access token on AAP for EDA"
+4. Click "Create controller token"
+
+#### Create Project in EDA
+
+We will use sample provided in https://github.com/kcalliga/pvcresize-eda
+
+1. In EDA got to Resources > Projects
+2. Click "Create Project"
+3. Enter the following information in the dialog:
+Name: resizepvc
+Description: resizepvc
+SCM Type: Git
+SCM URL: https://github.com/kcalliga/pvcresize-eda
+Credential: No credential since this is a public repo
+4. Click "Create Project"
