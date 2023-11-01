@@ -72,7 +72,7 @@ applicationManager:
 
 After this fix Policies are successfully deplyed using Applications>Subscription.
 
-> **Note** 
+> **Important** 
 > This procedure needs to be done for addons on all managed clusters. The > procedure is done on a hub cluster where klusterletaddonconfig exists in a namespace named after each managed cluster.
 
 For example:
@@ -110,7 +110,8 @@ Once all the information is filled in click "Create" in the header of the dialog
 
 ### Setting up GitOps with RHACM
 
-Note: This has been implemented using AAP, job template > integrate gitops with ACM
+> **Note** 
+>  This has been implemented using AAP, job template > integrate gitops with ACM
 
 To integrate GitOps with RHACM, all RHACM managed clusters need to be registered to an instance of GitOps operator running on the hub cluster. Once this is configured, applications can be deployed to those clusters using ArgoCD. To achieve this run the following commands on the hub cluster:
 
@@ -443,7 +444,8 @@ Secured services are installed on all managed clusters that need to be monitored
 
 ### Integrating compliance operator with RHACS
 
-Note: This has already been covered by the Ansible Automation Platform in Job Template: rhacs-compliance.
+> **Note** 
+> This has already been covered by the Ansible Automation Platform in Job Template: rhacs-compliance.
 
 RHACS can be configured to use the Compliance Operator for compliance reporting and remediation with OpenShift Container Platform clusters. That way the results from the Compliance Operator are  reported in the RHACS Compliance Dashboard.
 
@@ -521,7 +523,8 @@ oc patch -n rhacs-operator securedcluster.platform.stackrox.io/stackrox-secured-
 
 
 
-Note: This procedure needs to be done on all clusters.
+> **Important**
+> This procedure needs to be done on all clusters.
 
 ## AAP
 
@@ -552,7 +555,8 @@ The admin user and password can be fetched from the secret in ansible-automation
 1. Go to Workloads>Serets in the left side menu
 2. In the Project dropdown choose ansible-automation-platform
 3. Scroll down to secret named example-admin-password
-Note: In our case the name of the instance iscalled example. If any other name instane name was used during AAP deployment the name will follow this rule: <instance-name>-admin-password
+> **Note**
+>  In our case the name of the instance is called example. If any other name instane name was used during AAP deployment the name will follow this rule: \<instance-name>-admin-password
 4. Click on the secret to reveal secret details
 5. Scroll down and click Reveal values
 6. Copy the secret and use it to login to AAP web console
@@ -601,11 +605,13 @@ Proxy settings can be placed here as well, in JSON format:
   "NO_PROXY": ".cluster.local,.svc,10.128.0.0/14,10.254.164.0/24,10.254.164.248,10.254.171.0/24,10.254.171.11,10.254.171.12,127.0.0.1,172.30.0.0/16,api-int.hub-dev-cci.refmobilecloud.ux.nl.tmo,localhost,refmobilecloud.ux.nl.tmo"
 }
 ````
-NOTE 1: Only append the proxy setting to the existing variables, do not delete the ones already defined! 
-NOTE 2: Some programs using proxies will expect lower case vs. upper case env variable names. You can avoid this by setting both.
-NOTE 3: Some applications will have different implementations of the proxy environment variables. Example: git does not support CIDR notation for no_proxy or some applications will support the domain such as "NO_PROXY": "internal.domain".
-NOTE 4: Asterisk sign " * " is not supported while providing the domain information in the environment variable. For example, "*.example.com" will not work but ".example.com" will work for entire domain.
-NOTE 5: Not specifying "http://" or "https://" in the proxy address will trigger errors asking for <SCHEMA> in the variable string on some versions of Tower.
+> **Important**
+>  1. Only append the proxy setting to the existing variables, do not delete the ones already defined! 
+> 2. Some programs using proxies will expect lower case vs. upper case env variable names. You can avoid this by setting both.
+> 3. Some applications will have different implementations of the proxy environment variables. 
+> Example: git does not support CIDR notation for no_proxy or some applications will support the domain such as "NO_PROXY": "internal.domain".
+> 4. Asterisk sign " * " is not supported while providing the domain information in the environment variable. For example, "*.example.com" will not work but ".example.com" will work for entire domain.
+> 5. Not specifying "http://" or "https://" in the proxy address will trigger errors asking for \<SCHEMA> in the variable string on some versions of Tower.
 
 ### Creating service account on OCP for AAP
 
@@ -624,8 +630,9 @@ oc apply -f bootstrap/aap-prerequisites/service-account.yaml
 ````
 oc describe secrets aap-service-account-token-qm8dg -n default
 ````
-Note: Secret is created in the default namespace because service account is created in that namespace. Check the AAP/service-account.yaml about the details.
-Secrets are created accordign to service account name: <account_name>-token-<random_id>. In our case, secret name is aap-service-account-token-qm8dg 
+> **Note**
+> Secret is created in the default namespace because service account is created in that namespace. > > Check the AAP/service-account.yaml about the details.
+> Secrets are created accordign to service account name: <account_name>-token-<random_id>. In our case, secret name is aap-service-account-token-qm8dg 
 
 Copy the token and paste it in the appropriate field descibed in the chapter "Openshift API credentials"
 
@@ -643,12 +650,16 @@ Copy the token and paste it in the appropriate field descibed in the chapter "Op
 7. Paste the copied token in AAP dialogue under "API authentication bearer token"  
 8. Uncheck "Verify SSL" in case you are not using "Certificate Authority data" certificate, otherwise paste the CA certificate in the "Certificate Authority data" textbox and leave "Verify SSL" checked
 9. Click "Save"
-Note: Use this comand to extract ca.crt from the Secret, in case needed
+
+> **Note** 
+> Use this comand to extract ca.crt from the Secret, in case needed.
+
 ````
 oc get secret aap-service-account-token-qm8dg -n default  -o jsonpath="{.data['ca\.crt']}" |base64 -d
 ````
 
-Note: This procedure needs to be done on all clusters which need to be accessed by AAP.
+> **Important**
+> This procedure needs to be done on all clusters which need to be accessed by AAP.
 
 #### Git credentials
 
@@ -695,7 +706,8 @@ In order to create a Project follow the procedure:
 9. Click magnifier under  "Source Control Credential", choose the credential name you created following the procedure in "Git credentials" section.
 10. Click "Save"       
 
-Note: There is already a project created named AAP Demo. The project should provide a showcase for a couple of usecases.
+> **Note** 
+> There is already a project created named AAP Demo. The project should provide a showcase for a couple of usecases.
 
 #### Creating Job Templates
 
@@ -716,7 +728,8 @@ To configure Job Template follow the procedure:
 9. Click "Save"
    
 
-Note: There is already a Job Template named "integrate gitops with ACM" created. This job template is configuring the integration for RHACM and gitops. It applies a couple of yaml manifests in order to enable Application set for Applications in RHACM. This feature allows us to deploy applications to managed clsuters using ArgoCD. 
+> **Note** 
+> There is already a Job Template named "integrate gitops with ACM" created. This job template is configuring the integration for RHACM and gitops. It applies a couple of yaml manifests in order to enable Application set for Applications in RHACM. This feature allows us to deploy applications to managed clsuters using ArgoCD. 
 
 #### Running Jobs
 
