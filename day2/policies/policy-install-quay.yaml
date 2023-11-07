@@ -66,31 +66,7 @@ spec:
                 kind: QuayRegistry
                 metadata:
                   name: devregistry
-                  namespace: openshift-operators
-                spec:
-                  components:
-                    - kind: clair
-                      managed: true
-                    - kind: postgres
-                      managed: true
-                    - kind: objectstorage
-                      managed: true
-                    - kind: redis
-                      managed: true
-                    - kind: horizontalpodautoscaler
-                      managed: true
-                    - kind: route
-                      managed: true
-                    - kind: monitoring
-                      managed: true
-                    - kind: mirror
-                      managed: true
-                    - kind: tls
-                      managed: true
-                    - kind: quay
-                      managed: true
-                    - kind: clairpostgres
-                      managed: true
+                  namespace: quay-enterprise
     - objectDefinition:
         apiVersion: policy.open-cluster-management.io/v1
         kind: ConfigurationPolicy
@@ -105,6 +81,6 @@ spec:
                 apiVersion: quay.redhat.com/v1
                 kind: QuayRegistry
                 metadata:
-                  namespace: openshift-operators
+                  namespace: quay-enterprise
                 status:
                   phase: Running                  
