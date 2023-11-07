@@ -83,4 +83,4 @@ spec:
                 metadata:
                   namespace: openshift-operators
                 status:
-                  phase: Running                  
+                  ComponentsCreated                  
