@@ -83,4 +83,4 @@ spec:
                 metadata:
                   namespace: openshift-operators
                 status:
-                  ComponentsCreated                  
+                  currentVersion: v3.8.13                 
