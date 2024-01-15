@@ -49,13 +49,13 @@ spec:
                                      } 
 
                  - complianceType: musthave 
-                    objectDefinition: 
-                        apiVersion: constraints.gatekeeper.sh/v1beta1 
-                        kind: K8sBlockLoadBalancer 
-                        metadata: 
-                            name: block-load-balancer 
-                        spec: 
-                           match: 
-                                kinds: 
-                                   - apiGroups: [""] 
-                                     kinds: ["Service"] 
+                   objectDefinition: 
+                     apiVersion: constraints.gatekeeper.sh/v1beta1 
+                     kind: K8sBlockLoadBalancer 
+                     metadata: 
+                         name: block-load-balancer 
+                     spec: 
+                        match: 
+                             kinds: 
+                                - apiGroups: [""] 
+                                  kinds: ["Service"] 
