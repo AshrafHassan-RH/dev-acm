@@ -85,6 +85,9 @@ subjects:
   - name: policy-install-openshift-compliance
     apiGroup: policy.open-cluster-management.io
     kind: Policy
+  - name policy-gatekeeper-disable-lb-service
+    apiGroup: policy.open-cluster-management.io
+    kind: Policy
 ---
 apiVersion: policy.open-cluster-management.io/v1
 kind: PlacementBinding
