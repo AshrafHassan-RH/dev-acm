@@ -30,14 +30,14 @@ spec:
                 stringData:
                   thanos.yaml: |
                     type: s3
-                      config:
-                        bucket: multicluster-observability-fe321633-7460-4dd9-97fd-3636a39b340d
-                        endpoint: rook-ceph-rgw-ocs-storagecluster-cephobjectstore.openshift-storage.svc:443
-                        insecure: false
-                        access_key: E03KQIDY22AMOY8REMJI
-                        secret_key: 77pBHvE5wt86WUTAVIORxMIwc39VTiyCjewiIoqr
-                        http_config:
-                          insecure_skip_verify: true
+                    config:
+                      bucket: multicluster-observability-fe321633-7460-4dd9-97fd-3636a39b340d
+                      endpoint: rook-ceph-rgw-ocs-storagecluster-cephobjectstore.openshift-storage.svc:443
+                      insecure: false
+                      access_key: E03KQIDY22AMOY8REMJI
+                      secret_key: 77pBHvE5wt86WUTAVIORxMIwc39VTiyCjewiIoqr
+                      http_config:
+                        insecure_skip_verify: true
     - objectDefinition:
         apiVersion: policy.open-cluster-management.io/v1
         kind: ConfigurationPolicy
