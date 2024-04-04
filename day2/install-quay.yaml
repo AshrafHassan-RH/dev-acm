@@ -28,7 +28,7 @@ spec:
                   namespace: openshift-operators
                 spec:
                   name: quay-operator
-                  channel: stable-3.8
+                  channel: stable-3.11
                   installPlanApproval: Automatic
                   source: redhat-operators
                   sourceNamespace: openshift-marketplace
