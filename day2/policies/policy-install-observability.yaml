@@ -16,7 +16,7 @@ spec:
         metadata:
           name: thanos-secret
         spec:
-          remediationAction: enforce
+          remediationAction: inform
           severity: high
           object-templates:
             - complianceType: musthave
@@ -44,7 +44,7 @@ spec:
         metadata:
           name: multiclusterobservability
         spec:
-          remediationAction: enforce
+          remediationAction: inform
           severity: high
           object-templates:
             - complianceType: musthave
