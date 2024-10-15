@@ -129,6 +129,20 @@ subjects:
 apiVersion: policy.open-cluster-management.io/v1
 kind: PlacementBinding
 metadata:
+  name: binding-policies-edge-only
+  namespace: default
+placementRef:
+  name: placement-policies-edge
+  apiGroup: cluster.open-cluster-management.io
+  kind: Placement
+subjects:
+  - name: openshift-gitops-git-secret-on-edge.yaml
+    apiGroup: policy.open-cluster-management.io
+    kind: Policy
+---
+apiVersion: policy.open-cluster-management.io/v1
+kind: PlacementBinding
+metadata:
   name: binding-policies-all-managed-only
   namespace: default
 placementRef:
