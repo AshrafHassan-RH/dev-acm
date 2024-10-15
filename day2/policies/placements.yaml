@@ -61,7 +61,7 @@ metadata:
   namespace: default
 spec:
   clusterSets:
-    - 
+    - poc-near-edge
   predicates:
     - requiredClusterSelector:
         labelSelector:
