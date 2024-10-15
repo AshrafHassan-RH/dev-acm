@@ -54,6 +54,23 @@ spec:
                 - "reference-cluster"
                 - "prod-dev-cci"
 ---
+apiVersion: cluster.open-cluster-management.io/v1beta1
+kind: Placement
+metadata:
+  name: placement-policies-edge
+  namespace: default
+spec:
+  clusterSets:
+    - 
+  predicates:
+    - requiredClusterSelector:
+        labelSelector:
+          matchExpressions:
+            - key: name
+              operator: In
+              values:
+                - "edge01"
+---
 apiVersion: policy.open-cluster-management.io/v1
 kind: PlacementBinding
 metadata:
