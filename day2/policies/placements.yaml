@@ -59,6 +59,10 @@ kind: Placement
 metadata:
   name: placement-policies-edge
   namespace: default
+  labels:
+    app: policies
+    app.kubernetes.io/part-of: policies
+    apps.open-cluster-management.io/reconcile-rate: medium
 spec:
   clusterSets:
     - poc-near-edge
