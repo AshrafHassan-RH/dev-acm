@@ -58,7 +58,7 @@ apiVersion: cluster.open-cluster-management.io/v1beta1
 kind: Placement
 metadata:
   name: placement-policies-edge
-  namespace: openshift-gitops
+  namespace: default
   labels:
 spec:
   clusterSets:
@@ -131,7 +131,7 @@ apiVersion: policy.open-cluster-management.io/v1
 kind: PlacementBinding
 metadata:
   name: binding-policies-edge-only
-  namespace: openshift-gitops
+  namespace: default
 placementRef:
   name: placement-policies-edge
   apiGroup: cluster.open-cluster-management.io
