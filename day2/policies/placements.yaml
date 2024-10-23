@@ -59,7 +59,6 @@ kind: Placement
 metadata:
   name: placement-policies-edge
   namespace: default
-  labels:
 spec:
   clusterSets:
     - poc-near-edge
