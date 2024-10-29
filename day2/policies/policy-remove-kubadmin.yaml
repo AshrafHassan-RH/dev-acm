@@ -6,7 +6,7 @@ metadata:
   annotations:
     policy.open-cluster-management.io/description: policy-remove-kubadmin
 spec:
-  disabled: false
+  disabled: true
   policy-templates:
     - objectDefinition:
         apiVersion: policy.open-cluster-management.io/v1
